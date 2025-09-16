@@ -1,5 +1,34 @@
-# AutoSec
-AutoSec Security Dashboard
+# AutoSec: CyberSec Operations Console
+
+AutoSec is a comprehensive cybersecurity application designed for proactive network-level defense, dynamic IP blocklisting, and advanced behavioral analysis. This project demonstrates a microservices-based architecture using React for the frontend, Node.js/Express for the backend, PostgreSQL for structured data, MongoDB for logs, and RabbitMQ for asynchronous communication.
+
+## 🚀 Quick Start
+
+1. **Prerequisites:**
+   - Docker and Docker Compose installed
+   - Optional: Download GeoLite2-City.mmdb from MaxMind and place in `data/geoip/`
+
+2. **Run the application:**
+   ```bash
+   git clone <your-repo-url> autosec
+   cd autosec
+   docker compose up --build -d
+   ```
+
+3. **Access the application:**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8080/api
+   - RabbitMQ Management: http://localhost:15672 (guest/guest)
+
+## 📋 Implementation Status
+
+✅ **Complete Implementation** - All files and features from the README specification have been implemented:
+- Full backend API with Node.js/Express
+- Complete React frontend with cyberpunk theme
+- Database schemas and initialization
+- Docker containerization
+- Message queue integration
+- GeoIP service integration
 
 AutoSec is designed as a proactive and intelligent cybersecurity application, focusing on network-level defense with capabilities extending to user and system behavior. Its core strength lies in its dynamic IP blocklist coupled with advanced analytics to address modern cybersecurity challenges.
 
