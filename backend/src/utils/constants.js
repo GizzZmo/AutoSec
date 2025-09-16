@@ -1,0 +1,10 @@
+const RULE_TYPES = {
+  IP_SINGLE: 'IP_SINGLE',
+  IP_RANGE: 'IP_RANGE',
+  COUNTRY: 'COUNTRY',
+  ORGANIZATION: 'ORGANIZATION',
+};
+
+module.exports = {
+  RULE_TYPES,
+};
