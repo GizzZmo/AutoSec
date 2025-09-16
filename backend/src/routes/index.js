@@ -23,6 +23,7 @@ const {
 const authRoutes = require('./auth');
 const userRoutes = require('./users');
 const behaviorRoutes = require('./behavior');
+const mfaRoutes = require('./mfa');
 
 // Swagger configuration
 const swaggerOptions = {
@@ -69,6 +70,7 @@ router.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, {
 router.use('/auth', generalRateLimit, authRoutes);
 router.use('/users', generalRateLimit, userRoutes);
 router.use('/behavior', generalRateLimit, behaviorRoutes);
+router.use('/mfa', generalRateLimit, mfaRoutes);
 
 /**
  * @swagger

@@ -1,6 +1,7 @@
 const NetworkBehavior = require('../models/NetworkBehavior');
 const ThreatEvent = require('../models/ThreatEvent');
 const Log = require('../models/Log');
+const mlService = require('./mlBehaviorAnalysisService');
 const logger = require('../config/logger');
 const geoIpService = require('./geoIpService');
 
@@ -98,14 +99,32 @@ class NetworkBehaviorAnalyzer {
       // Generate threat events for high-risk anomalies
       await this.generateNetworkThreatEvents(behaviorProfile);
 
+      // Enhanced ML analysis
+      const mlAnalysis = await mlService.analyzeNetworkBehavior({
+        trafficPatterns,
+        connectionPatterns,
+        geolocation,
+        securityEvents,
+        riskScores,
+        anomalies,
+      }, identifier);
+
+      // Update behavior profile with ML insights
+      behaviorProfile.mlAnalysis = mlAnalysis.analysis;
+      await behaviorProfile.save();
+
       logger.info(`Network behavior analysis completed for ${identifier}`, {
         identifier,
         identifierType,
         riskScore: riskScores.overall,
         anomaliesCount: anomalies.length,
+        mlThreatLevel: mlAnalysis.analysis.threatDetection.level,
       });
 
-      return behaviorProfile;
+      return {
+        behaviorProfile,
+        mlAnalysis,
+      };
     } catch (error) {
       logger.error('Error analyzing network behavior:', error);
       throw error;

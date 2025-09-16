@@ -1,6 +1,7 @@
 const UserBehavior = require('../models/UserBehavior');
 const ThreatEvent = require('../models/ThreatEvent');
 const Log = require('../models/Log');
+const mlService = require('./mlBehaviorAnalysisService');
 const logger = require('../config/logger');
 const crypto = require('crypto');
 
@@ -72,13 +73,29 @@ class UserBehaviorAnalyzer {
       // Generate threat events for high-risk anomalies
       await this.generateThreatEvents(behaviorProfile);
 
+      // Enhanced ML analysis
+      const mlAnalysis = await mlService.analyzeUserBehavior({
+        loginPatterns,
+        activityPatterns,
+        riskScores,
+        anomalies,
+      }, userId);
+
+      // Update behavior profile with ML insights
+      behaviorProfile.mlAnalysis = mlAnalysis.analysis;
+      await behaviorProfile.save();
+
       logger.info(`User behavior analysis completed for user ${userId}`, {
         userId,
         riskScore: riskScores.overall,
         anomaliesCount: anomalies.length,
+        mlRiskScore: mlAnalysis.analysis.riskScore.overall,
       });
 
-      return behaviorProfile;
+      return {
+        behaviorProfile,
+        mlAnalysis,
+      };
     } catch (error) {
       logger.error('Error analyzing user behavior:', error);
       throw error;

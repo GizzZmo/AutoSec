@@ -124,6 +124,47 @@ const userBehaviorSchema = new mongoose.Schema({
     resolved: { type: Boolean, default: false },
     riskScore: { type: Number, min: 0, max: 100 },
   }],
+  mlAnalysis: {
+    anomalies: {
+      detections: [{
+        type: String,
+        feature: String,
+        method: String,
+        score: Number,
+        value: Number,
+        baseline: mongoose.Schema.Types.Mixed,
+        severity: { type: String, enum: ['low', 'medium', 'high', 'critical'] },
+      }],
+      scores: mongoose.Schema.Types.Mixed,
+      ensembleScore: { type: Number, default: 0 },
+      isAnomalous: { type: Boolean, default: false },
+    },
+    riskScore: {
+      overall: { type: Number, min: 0, max: 100, default: 0 },
+      components: mongoose.Schema.Types.Mixed,
+      risk_level: { type: String, enum: ['low', 'medium', 'high', 'critical'] },
+    },
+    classification: {
+      category: { type: String, enum: ['normal', 'unusual', 'suspicious', 'highly_suspicious'] },
+      confidence: { type: Number, min: 0, max: 1, default: 0.5 },
+      patterns: [String],
+      reasoning: String,
+    },
+    patterns: mongoose.Schema.Types.Mixed,
+    predictions: {
+      nextLoginTime: Date,
+      riskTrend: { type: String, enum: ['increasing', 'stable', 'decreasing'] },
+      confidence: { type: Number, min: 0, max: 1, default: 0.5 },
+    },
+    insights: [{
+      type: String,
+      message: String,
+      severity: { type: String, enum: ['low', 'medium', 'high'] },
+    }],
+    features: mongoose.Schema.Types.Mixed,
+    timestamp: { type: Date, default: Date.now },
+    modelVersions: mongoose.Schema.Types.Mixed,
+  },
   lastUpdated: {
     type: Date,
     default: Date.now,

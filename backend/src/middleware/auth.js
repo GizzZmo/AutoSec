@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const rbacService = require('../services/rbacService');
 const logger = require('../config/logger');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -101,14 +102,105 @@ exports.authorize = (...allowedRoles) => {
   };
 };
 
-// Role hierarchy check
-const roleHierarchy = {
-  'admin': 4,
-  'analyst': 3,
-  'operator': 2,
-  'viewer': 1,
+// Permission-based authorization middleware
+exports.requirePermission = (permission) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required',
+      });
+    }
+
+    if (!rbacService.hasPermission(req.user, permission)) {
+      logger.warn(`Permission denied for user: ${req.user.username}`, {
+        userId: req.user.id,
+        userRole: req.user.role,
+        requiredPermission: permission,
+        endpoint: req.originalUrl,
+        method: req.method,
+      });
+
+      return res.status(403).json({
+        success: false,
+        message: `Permission required: ${permission}`,
+        requiredPermission: permission,
+      });
+    }
+
+    next();
+  };
 };
 
+// Multiple permissions middleware (user needs ALL permissions)
+exports.requireAllPermissions = (...permissions) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required',
+      });
+    }
+
+    const missingPermissions = permissions.filter(
+      permission => !rbacService.hasPermission(req.user, permission)
+    );
+
+    if (missingPermissions.length > 0) {
+      logger.warn(`Multiple permissions denied for user: ${req.user.username}`, {
+        userId: req.user.id,
+        userRole: req.user.role,
+        missingPermissions,
+        endpoint: req.originalUrl,
+        method: req.method,
+      });
+
+      return res.status(403).json({
+        success: false,
+        message: 'Insufficient permissions',
+        missingPermissions,
+      });
+    }
+
+    next();
+  };
+};
+
+// Any of the permissions middleware (user needs ANY permission)
+exports.requireAnyPermission = (...permissions) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required',
+      });
+    }
+
+    const hasAnyPermission = permissions.some(
+      permission => rbacService.hasPermission(req.user, permission)
+    );
+
+    if (!hasAnyPermission) {
+      logger.warn(`No required permissions for user: ${req.user.username}`, {
+        userId: req.user.id,
+        userRole: req.user.role,
+        requiredPermissions: permissions,
+        endpoint: req.originalUrl,
+        method: req.method,
+      });
+
+      return res.status(403).json({
+        success: false,
+        message: 'At least one of the required permissions is needed',
+        requiredPermissions: permissions,
+      });
+    }
+
+    next();
+  };
+};
+
+// Role hierarchy check
 exports.requireMinRole = (minRole) => {
   return (req, res, next) => {
     if (!req.user) {
@@ -118,16 +210,11 @@ exports.requireMinRole = (minRole) => {
       });
     }
 
-    const userRoleLevel = roleHierarchy[req.user.role] || 0;
-    const requiredRoleLevel = roleHierarchy[minRole] || 0;
-
-    if (userRoleLevel < requiredRoleLevel) {
+    if (!rbacService.hasMinimumRole(req.user, minRole)) {
       logger.warn(`Insufficient role level for user: ${req.user.username}`, {
         userId: req.user.id,
         userRole: req.user.role,
-        userRoleLevel,
         requiredRole: minRole,
-        requiredRoleLevel,
         endpoint: req.originalUrl,
         method: req.method,
       });
@@ -200,5 +287,61 @@ exports.ownerOrAdmin = (resourceUserIdField = 'userId') => {
     });
   };
 };
+
+// User management permission check
+exports.canManageUser = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required',
+    });
+  }
+
+  const targetUserId = req.params.userId || req.params.id || req.body.userId;
+  
+  if (!targetUserId) {
+    return res.status(400).json({
+      success: false,
+      message: 'Target user ID is required',
+    });
+  }
+
+  // Find target user to check role hierarchy
+  User.findByPk(targetUserId)
+    .then(targetUser => {
+      if (!targetUser) {
+        return res.status(404).json({
+          success: false,
+          message: 'Target user not found',
+        });
+      }
+
+      if (!rbacService.canManageUser(req.user, targetUser)) {
+        logger.warn(`User management denied for user: ${req.user.username}`, {
+          userId: req.user.id,
+          targetUserId: targetUser.id,
+          userRole: req.user.role,
+          targetRole: targetUser.role,
+        });
+
+        return res.status(403).json({
+          success: false,
+          message: 'Cannot manage user with equal or higher role level',
+        });
+      }
+
+      req.targetUser = targetUser;
+      next();
+    })
+    .catch(error => {
+      logger.error('User management check error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+      });
+    });
+};
+
+module.exports = exports;
 
 module.exports = exports;

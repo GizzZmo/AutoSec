@@ -82,6 +82,18 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  mfaTempSecret: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  mfaBackupCodes: {
+    type: DataTypes.JSON,
+    allowNull: true,
+  },
+  mfaRecoveryCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   emailVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
@@ -100,6 +112,31 @@ const User = sequelize.define('User', {
     allowNull: true,
   },
   preferences: {
+    type: DataTypes.JSON,
+    defaultValue: {},
+    allowNull: true,
+  },
+  knownIPs: {
+    type: DataTypes.JSON,
+    defaultValue: [],
+    allowNull: true,
+  },
+  knownDevices: {
+    type: DataTypes.JSON,
+    defaultValue: [],
+    allowNull: true,
+  },
+  typicalLoginHours: {
+    type: DataTypes.JSON,
+    defaultValue: [],
+    allowNull: true,
+  },
+  loginSessions: {
+    type: DataTypes.JSON,
+    defaultValue: [],
+    allowNull: true,
+  },
+  permissions: {
     type: DataTypes.JSON,
     defaultValue: {},
     allowNull: true,
@@ -171,9 +208,96 @@ User.prototype.getPublicProfile = function() {
     lastLogin: this.lastLogin,
     mfaEnabled: this.mfaEnabled,
     emailVerified: this.emailVerified,
+    permissions: this.permissions,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };
+};
+
+User.prototype.enableMFA = async function(secret, backupCodes) {
+  return this.update({
+    mfaEnabled: true,
+    mfaSecret: secret,
+    mfaTempSecret: null,
+    mfaBackupCodes: backupCodes,
+  });
+};
+
+User.prototype.disableMFA = async function() {
+  return this.update({
+    mfaEnabled: false,
+    mfaSecret: null,
+    mfaTempSecret: null,
+    mfaBackupCodes: null,
+    mfaRecoveryCode: null,
+  });
+};
+
+User.prototype.updateLoginContext = async function(ip, userAgent) {
+  const knownIPs = this.knownIPs || [];
+  const knownDevices = this.knownDevices || [];
+  const currentHour = new Date().getHours();
+  const typicalHours = this.typicalLoginHours || [];
+
+  // Add IP if not known (keep last 10)
+  if (ip && !knownIPs.includes(ip)) {
+    knownIPs.push(ip);
+    if (knownIPs.length > 10) {
+      knownIPs.shift();
+    }
+  }
+
+  // Add device if not known (keep last 5)
+  if (userAgent && !knownDevices.includes(userAgent)) {
+    knownDevices.push(userAgent);
+    if (knownDevices.length > 5) {
+      knownDevices.shift();
+    }
+  }
+
+  // Track typical login hours
+  if (!typicalHours.includes(currentHour)) {
+    typicalHours.push(currentHour);
+  }
+
+  return this.update({
+    knownIPs,
+    knownDevices,
+    typicalLoginHours: typicalHours,
+    lastLogin: new Date(),
+  });
+};
+
+User.prototype.hasPermission = function(permission) {
+  if (!this.permissions) return false;
+  
+  // Admin has all permissions
+  if (this.role === 'admin') return true;
+  
+  // Check specific permission
+  return this.permissions[permission] === true;
+};
+
+User.prototype.addSession = async function(sessionId, deviceInfo) {
+  const sessions = this.loginSessions || [];
+  sessions.push({
+    id: sessionId,
+    deviceInfo,
+    createdAt: new Date(),
+    lastActivity: new Date(),
+  });
+
+  // Keep only last 5 sessions
+  if (sessions.length > 5) {
+    sessions.shift();
+  }
+
+  return this.update({ loginSessions: sessions });
+};
+
+User.prototype.removeSession = async function(sessionId) {
+  const sessions = (this.loginSessions || []).filter(s => s.id !== sessionId);
+  return this.update({ loginSessions: sessions });
 };
 
 module.exports = User;
