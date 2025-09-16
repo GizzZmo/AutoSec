@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service
+  autosec-postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: autosec_db
+      POSTGRES_USER: autosec_user
+      POSTGRES_PASSWORD: autosec_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432" # Expose for local DB tools if needed
+
+  # MongoDB Database Service
+  autosec-mongodb:
+    image: mongo:6.0-jammy
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017" # Expose for local DB tools if needed
+
+  # RabbitMQ Message Broker Service
+  autosec-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672" # AMQP protocol port
+      - "15672:15672" # Management UI port
+
+  # AutoSec Backend Service
+  autosec-backend:
+    build: ./backend
+    restart: always
+    environment:
+      PORT: 8080
+      PG_HOST: autosec-postgres
+      PG_PORT: 5432
+      PG_USER: autosec_user
+      PG_PASSWORD: autosec_password
+      PG_DATABASE: autosec_db
+      MONGO_URI: mongodb://autosec-mongodb:27017/autosec_logs
+      RABBITMQ_URL: amqp://guest:guest@autosec-rabbitmq:5672
+      GEOIP_DB_PATH: /app/data/geoip/GeoLite2-City.mmdb # Path inside the container
+    volumes:
+      - ./data/geoip:/app/data/geoip:ro # Mount GeoIP data read-only
+    ports:
+      - "8080:8080"
+    depends_on:
+      - autosec-postgres
+      - autosec-mongodb
+      - autosec-rabbitmq
+
+  # AutoSec Frontend Service
+  autosec-frontend:
+    build: ./frontend
+    restart: always
+    environment:
+      REACT_APP_API_BASE_URL: http://localhost:8080/api # Connects to backend via host machine's localhost
+    ports:
+      - "3000:80" # Nginx serves React build on port 80 inside container
+    depends_on:
+      - autosec-backend
+
+volumes:
+  postgres_data:
+  mongodb_data:
