@@ -156,16 +156,53 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Reset failed login attempts on successful login
+    // Reset failed login attempts on successful password verification
     if (user.failedLoginAttempts > 0) {
       await user.resetFailedLoginAttempts();
     }
 
-    // Update last login
-    await user.update({ lastLogin: new Date() });
+    const mfaService = require('../services/mfaService');
+    const loginContext = {
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+    };
 
-    // Generate tokens
+    // Check if MFA is required
+    const requiresMFA = mfaService.isMFARequired(user, loginContext);
+    
+    if (requiresMFA) {
+      // Create MFA session
+      const crypto = require('crypto');
+      const mfaToken = crypto.randomBytes(32).toString('hex');
+      
+      // Store MFA session (in production, use Redis or secure session store)
+      req.session = req.session || {};
+      req.session.mfaSession = {
+        userId: user.id,
+        token: mfaToken,
+        expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+      };
+
+      logger.info(`MFA required for user: ${user.username}`, {
+        userId: user.id,
+        ip: req.ip,
+        reason: user.mfaEnabled ? 'mfa_enabled' : 'risk_assessment',
+      });
+
+      return res.json({
+        success: true,
+        requiresMFA: true,
+        message: 'Multi-factor authentication required',
+        data: {
+          mfaToken,
+          hasBackupCodes: !!(user.mfaBackupCodes && user.mfaBackupCodes.length > 0),
+        },
+      });
+    }
+
+    // Complete login without MFA
     const { accessToken, refreshToken } = generateTokens(user.id);
+    await user.updateLoginContext(req.ip, req.get('User-Agent'));
 
     logger.info(`Successful login for user: ${user.username}`, {
       userId: user.id,
