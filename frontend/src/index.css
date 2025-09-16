@@ -1,0 +1,187 @@
+/* Basic Cyberpunk-ish theme */
+body {
+  margin: 0;
+  font-family: 'Share Tech Mono', monospace, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #1a1a2e; /* Dark blue/purple */
+  color: #00ff00; /* Neon green */
+  overflow-x: hidden;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#root {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-container {
+  display: flex;
+  width: 100%;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #0f0f1a; /* Slightly darker background for content */
+  border-left: 1px solid #00ff00;
+}
+
+/* Header */
+.header {
+  background-color: #0a0a1a;
+  color: #00ffff; /* Neon cyan */
+  padding: 15px 20px;
+  font-size: 1.5em;
+  border-bottom: 1px solid #00ffff;
+  text-align: center;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 200px;
+  background-color: #0a0a1a;
+  padding: 20px;
+  border-right: 1px solid #00ff00;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar nav li {
+  margin-bottom: 15px;
+}
+
+.sidebar nav a {
+  color: #00ff00;
+  text-decoration: none;
+  font-size: 1.1em;
+  display: block;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  color: #00ffff;
+  border-color: #00ffff;
+  background-color: #2a2a4a;
+  box-shadow: 0 0 10px #00ffff;
+}
+
+/* General styles for forms, tables, buttons */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #00ffff;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="datetime-local"],
+.form-group select,
+.form-group textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  background-color: #2a2a4a;
+  border: 1px solid #00ffff;
+  color: #00ff00;
+  border-radius: 3px;
+  font-size: 1em;
+}
+
+.form-group input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+button {
+  background-color: #00ffff;
+  color: #1a1a2e;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 3px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+  background-color: #00ff00;
+  color: #1a1a2e;
+  box-shadow: 0 0 10px #00ff00;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table th, table td {
+  border: 1px solid #00ffff;
+  padding: 10px;
+  text-align: left;
+}
+
+table th {
+  background-color: #2a2a4a;
+  color: #00ffff;
+}
+
+table tr:nth-child(even) {
+  background-color: #1a1a2e;
+}
+
+table tr:hover {
+  background-color: #2a2a4a;
+}
+
+.status-active {
+  color: #00ff00; /* Neon green */
+}
+
+.status-inactive {
+  color: #ff0000; /* Red */
+}
+
+.status-expired {
+  color: #ffcc00; /* Yellow/Orange */
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  margin: 0 5px;
+  background-color: #2a2a4a;
+  color: #00ffff;
+  border: 1px solid #00ffff;
+}
+
+.pagination button:disabled {
+  background-color: #1a1a2e;
+  color: #555;
+  border-color: #555;
+  cursor: not-allowed;
+}
+
+.pagination button.active {
+  background-color: #00ffff;
+  color: #1a1a2e;
+}
