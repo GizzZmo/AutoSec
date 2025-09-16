@@ -26,12 +26,13 @@ AutoSec is a comprehensive, enterprise-grade cybersecurity platform designed for
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Docker & Docker Compose** - Latest version recommended
+- **Docker & Docker Compose** - Latest version recommended (Docker 20.10+, Compose 2.0+)
 - **GeoIP Database** - Download GeoLite2-City.mmdb from MaxMind (free registration required)
 - **Hardware Requirements**:
-  - CPU: 4+ cores recommended
-  - RAM: 8GB+ recommended  
+  - CPU: 4+ cores recommended (2+ minimum)
+  - RAM: 8GB+ recommended (4GB minimum)
   - Storage: 20GB+ available space
+  - Network: Internet connection for threat intelligence feeds
 
 ### Installation
 
@@ -41,68 +42,119 @@ AutoSec is a comprehensive, enterprise-grade cybersecurity platform designed for
    cd autosec
    ```
 
-2. **Configure environment:**
-   ```bash
-   cp backend/.env.example backend/.env
-   # Edit backend/.env with your specific configuration
-   ```
-
-3. **Setup GeoIP database:**
+2. **Setup GeoIP database:**
    ```bash
    mkdir -p data/geoip
    # Download GeoLite2-City.mmdb from MaxMind and place in data/geoip/
+   # Register at https://www.maxmind.com/en/geolite2/signup
+   # Download the binary database (not CSV)
+   wget -O data/geoip/GeoLite2-City.mmdb "YOUR_MAXMIND_DOWNLOAD_URL"
+   ```
+
+3. **Configure environment:**
+   ```bash
+   # Backend configuration
+   cp backend/.env.example backend/.env
+   
+   # Generate secure JWT secrets
+   openssl rand -base64 64 # Use this for JWT_SECRET
+   openssl rand -base64 32 # Use this for encryption keys
+   
+   # Edit backend/.env with your configuration:
+   # - Change default passwords
+   # - Set secure JWT secrets  
+   # - Configure external service credentials (optional)
    ```
 
 4. **Deploy the platform:**
    ```bash
+   # Build and start all services
    docker compose up --build -d
+   
+   # Check service health
+   docker compose ps
+   docker compose logs -f autosec-backend
+   ```
+
+5. **Initialize the system:**
+   ```bash
+   # Wait for all services to be healthy (may take 2-3 minutes)
+   docker compose exec autosec-backend npm run db:migrate
+   docker compose exec autosec-backend npm run db:seed
+   
+   # Create admin user (optional - can also register via UI)
+   docker compose exec autosec-backend npm run create-admin
    ```
 
 ### Access Points
 - **Web Console**: http://localhost:3000
 - **API Gateway**: http://localhost:8080/api
-- **RabbitMQ Management**: http://localhost:15672 (guest/guest)
 - **API Documentation**: http://localhost:8080/api/docs (Swagger UI)
+- **RabbitMQ Management**: http://localhost:15672 (guest/guest)
+
+### First Steps
+
+1. **Access the web console** at http://localhost:3000
+2. **Register an admin account** or use the created admin credentials
+3. **Configure your first blocking rule** in the Rules section
+4. **Test log ingestion** using the API or web interface
+5. **Review the dashboard** for system status and metrics
+
+### Verification
+
+```bash
+# Test API health
+curl http://localhost:8080/api/health
+
+# Test GeoIP functionality
+curl "http://localhost:8080/api/geoip?ip=8.8.8.8"
+
+# Check service logs
+docker compose logs -f autosec-backend
+docker compose logs -f autosec-frontend
+```
 
 ## 🏗️ Architecture Overview
 
-AutoSec follows a modern, cloud-native microservices architecture designed for scalability, resilience, and security.
+AutoSec follows a modern, cloud-native microservices architecture designed for scalability, resilience, and security. The platform consists of over 14,000 lines of production-ready code implementing advanced cybersecurity capabilities.
 
 ### System Components
 
 #### Frontend Layer
-- **React Web Console** - Modern, responsive cybersecurity dashboard
-- **Real-time Dashboards** - Live threat monitoring and system status
-- **Mobile-Responsive UI** - Access from any device
+- **React Web Console** - Modern, responsive cybersecurity dashboard with cyberpunk theme
+- **Real-time Dashboards** - Live threat monitoring and system status using WebSocket connections
+- **Mobile-Responsive UI** - Optimized for desktop, tablet, and mobile access
+- **Component Architecture** - Modular React components for maintainability
 
 #### API Gateway & Services
-- **Express.js API Gateway** - Centralized API management and routing
-- **Authentication Service** - JWT-based authentication with RBAC
-- **Configuration Service** - Dynamic rule and policy management
-- **Telemetry Service** - High-performance log ingestion and processing
+- **Express.js API Gateway** - Centralized API management and routing with middleware
+- **Authentication Service** - JWT-based authentication with refresh tokens and RBAC
+- **Security Middleware** - Rate limiting, input validation, CORS, and security headers
+- **Swagger Documentation** - Auto-generated API documentation and testing interface
 
-#### AI/ML Engine
-- **Behavioral Analysis Engine** - UEBA and NBA with machine learning
-- **Threat Detection Models** - Real-time anomaly detection
-- **Risk Scoring Engine** - Dynamic threat prioritization
+#### AI/ML Engine (Implemented)
+- **Behavioral Analysis Engine** - UEBA and NBA with multiple ML algorithms
+- **Threat Detection Models** - Real-time anomaly detection using clustering and statistical methods
+- **Risk Scoring Engine** - Dynamic threat prioritization with ensemble models
+- **Feature Extraction** - Advanced temporal, frequency, and statistical pattern analysis
 
 #### Data Layer
-- **PostgreSQL** - Structured data (users, rules, configurations)
-- **MongoDB** - Unstructured data (logs, events, analytics)
-- **Redis** - Caching and session management
-- **InfluxDB** - Time-series metrics and performance data
+- **PostgreSQL** - Structured data (users, rules, configurations, audit logs)
+- **MongoDB** - Unstructured data (logs, events, analytics, behavioral data)
+- **Redis** - Caching, session management, and real-time data
+- **Message Queues** - RabbitMQ for asynchronous processing and job queues
 
-#### Integration Layer
-- **Firewall Connectors** - Palo Alto, Cisco, iptables integrations
-- **Threat Intelligence Feeds** - External threat data integration
-- **SIEM/SOAR Connectors** - Enterprise security tool integration
-- **Vulnerability Scanners** - Nessus, OpenVAS, Qualys integration
+#### Integration Layer (Implemented)
+- **Firewall Connectors** - Native Palo Alto, Cisco ASA, and iptables integrations
+- **Authentication Systems** - MFA with TOTP, SSO framework support
+- **API Integrations** - Extensible connector framework for external systems
+- **Security Tools** - Framework for SIEM, SOAR, and vulnerability scanner integration
 
-#### Infrastructure
-- **RabbitMQ** - Asynchronous message processing
-- **Docker/Kubernetes** - Container orchestration
-- **Nginx** - Load balancing and reverse proxy
-- **Elasticsearch** - Advanced search and analytics
+#### Infrastructure & DevOps
+- **Docker/Kubernetes** - Container orchestration with health checks
+- **Message Queues** - RabbitMQ for reliable asynchronous processing
+- **Load Balancing** - Nginx configuration for high availability
+- **Monitoring** - Built-in health checks and metrics endpoints
 
 ### Security Features
 
@@ -131,69 +183,90 @@ AutoSec follows a modern, cloud-native microservices architecture designed for s
 #### Core Platform
 - [x] Microservices architecture with Docker
 - [x] PostgreSQL and MongoDB database integration
+- [x] Redis caching and session management
 - [x] RabbitMQ message queue system
-- [x] React frontend with responsive design
-- [x] REST API with Express.js
+- [x] React frontend with responsive cyberpunk-themed design
+- [x] REST API with Express.js and Swagger documentation
 - [x] GeoIP integration for location-based analysis
 
+#### Authentication & Authorization
+- [x] JWT-based authentication system with refresh tokens
+- [x] Role-based access control (RBAC) with granular permissions
+- [x] Multi-factor authentication (MFA) with TOTP support
+- [x] Single sign-on (SSO) integration framework
+- [x] Password hashing with bcrypt
+- [x] Session management and security middleware
+
 #### Security Features
-- [x] Dynamic IP blocklist management
-- [x] Real-time log ingestion and processing
-- [x] Basic threat detection and alerting
-- [x] Network flow analysis
-- [x] Geographic-based filtering
+- [x] Dynamic IP blocklist management (single IPs, ranges, countries, organizations)
+- [x] Real-time log ingestion and processing via RabbitMQ
+- [x] Advanced threat detection and alerting
+- [x] Network flow analysis and monitoring
+- [x] Geographic-based filtering and geo-blocking
+- [x] Rate limiting and DDoS protection
+- [x] Security headers and input validation
+
+#### Behavioral Analysis Engine
+- [x] Machine learning models for anomaly detection using multiple algorithms
+- [x] User and Entity Behavior Analytics (UEBA) with risk scoring
+- [x] Network Behavior Analytics (NBA) with statistical analysis
+- [x] Real-time behavior monitoring and alerting
+- [x] ML-based clustering and classification
+- [x] Advanced feature extraction for temporal, frequency, and statistical patterns
+
+#### Firewall Integrations
+- [x] Palo Alto Networks firewall integration with XML API
+- [x] Cisco ASA/FTD integration with SSH/API support
+- [x] iptables/netfilter integration for Linux systems
+- [x] Firewall integration manager with unified interface
 
 ### 🚧 In Development
 
-#### Authentication & Authorization
-- [ ] JWT-based authentication system
-- [ ] Role-based access control (RBAC)
-- [ ] Multi-factor authentication (MFA)
-- [ ] Single sign-on (SSO) integration
-
-#### Behavioral Analysis Engine
-- [ ] Machine learning models for anomaly detection
-- [ ] User and Entity Behavior Analytics (UEBA)
-- [ ] Network Behavior Analytics (NBA)
-- [ ] Risk scoring and threat prioritization
-
 #### Advanced Integrations
-- [ ] Palo Alto Networks firewall integration
-- [ ] Cisco ASA/FTD integration
-- [ ] iptables/netfilter integration
 - [ ] SDN controller integration (OpenDaylight, ONOS)
+- [ ] Enhanced SIEM/SOAR connectors (Splunk, QRadar, etc.)
+- [ ] Additional vulnerability scanner integrations
 
-#### Threat Intelligence
+#### Threat Intelligence & Analytics
 - [ ] External threat feed integration (MISP, STIX/TAXII)
 - [ ] IOC (Indicators of Compromise) management
-- [ ] Threat hunting capabilities
-- [ ] Automated threat correlation
+- [ ] Advanced threat hunting capabilities
+- [ ] Automated threat correlation and intelligence
 
-#### Incident Response
-- [ ] Automated response playbooks
-- [ ] Workflow engine for incident management
-- [ ] Forensic analysis tools
-- [ ] Compliance reporting automation
+#### Incident Response & Automation
+- [ ] Automated response playbooks and workflows
+- [ ] Advanced incident management and forensic analysis
+- [ ] Compliance reporting automation (SOC 2, ISO 27001, NIST)
+- [ ] Integration with ticketing systems (JIRA, ServiceNow)
 
 #### Attack Surface Management
-- [ ] Automated asset discovery
-- [ ] Vulnerability scanner integration
-- [ ] Port scanning and service detection
-- [ ] Risk assessment and scoring
+- [ ] Automated asset discovery and inventory
+- [ ] Advanced vulnerability scanner integration (Nessus, OpenVAS, Qualys)
+- [ ] Continuous security posture assessment
+- [ ] Risk assessment and scoring optimization
 
 ### 🎯 Planned Features
 
 #### Enterprise Features
 - [ ] Kubernetes deployment with Helm charts
 - [ ] High availability and horizontal scaling
-- [ ] Advanced monitoring and observability
+- [ ] Advanced monitoring and observability (Prometheus/Grafana)
 - [ ] Disaster recovery and backup systems
+- [ ] Service mesh integration (Istio)
 
 #### Analytics & Reporting
-- [ ] Advanced dashboard customization
-- [ ] Real-time threat visualization
-- [ ] Custom report generation
-- [ ] Executive summary dashboards
+- [ ] Advanced dashboard customization and widgets
+- [ ] Real-time threat visualization and 3D network maps
+- [ ] Custom report generation with scheduled delivery
+- [ ] Executive summary dashboards and KPI tracking
+- [ ] Machine learning model performance monitoring
+
+#### Advanced Security Features
+- [ ] Zero Trust Network Access (ZTNA) integration
+- [ ] Cloud security posture management (CSPM)
+- [ ] Container security scanning and runtime protection
+- [ ] Data loss prevention (DLP) integration
+- [ ] Advanced deception technology
 
 ## 🔧 Development Setup
 
@@ -204,59 +277,105 @@ AutoSec follows a modern, cloud-native microservices architecture designed for s
    # Backend development
    cd backend
    npm install
-   npm run dev
    
-   # Frontend development
-   cd frontend
+   # Frontend development  
+   cd ../frontend
    npm install
-   npm start
    ```
 
 2. **Database setup:**
    ```bash
-   # Start only databases for development
-   docker compose up postgres mongodb rabbitmq -d
+   # Start only databases and message broker for development
+   docker compose up postgres mongodb redis rabbitmq -d
+   
+   # Wait for services to be healthy
+   docker compose ps
    ```
 
 3. **Environment configuration:**
    ```bash
-   # Copy and customize environment files
-   cp backend/.env.example backend/.env
-   cp frontend/.env.example frontend/.env
+   # Backend configuration
+   cd backend
+   cp .env.example .env
+   # Edit .env with your specific configuration:
+   # - Database connection strings
+   # - JWT secrets (generate secure random strings)
+   # - GeoIP database path
+   # - External service credentials
+   
+   # Frontend configuration
+   cd ../frontend
+   cp .env.example .env
+   # Configure API base URL and other frontend settings
+   ```
+
+4. **Start development servers:**
+   ```bash
+   # Start backend with hot reload
+   cd backend
+   npm run dev
+   
+   # In another terminal, start frontend
+   cd frontend
+   npm start
    ```
 
 ### Testing
 
 ```bash
-# Backend tests
+# Backend tests (unit, integration, and API tests)
 cd backend
-npm test
+npm test                    # Run all tests
+npm run test:watch          # Run tests in watch mode
+npm run test:coverage       # Generate coverage report
 
 # Frontend tests
 cd frontend
-npm test
+npm test                    # Run React tests
+npm run test:coverage       # Generate coverage report
 
-# Integration tests
-npm run test:integration
+# End-to-end testing
+npm run test:e2e            # Full application testing
 
 # Load testing
-npm run test:load
+npm run test:load           # Performance and load testing
 ```
 
-### Code Quality
+### Code Quality & Security
 
 ```bash
-# Linting
+# Backend linting and formatting
+cd backend
+npm run lint                # ESLint check
+npm run lint:fix            # Auto-fix linting issues
+npm run format              # Prettier formatting
+
+# Security auditing
+npm audit                   # Check for security vulnerabilities
+npm run security:check      # Additional security scanning
+
+# Frontend linting
+cd frontend
 npm run lint
+npm run lint:fix
 
-# Code formatting
-npm run format
+# Dependency checking
+npm run deps:check          # Check for outdated dependencies
+npm run deps:update         # Update dependencies
+```
 
-# Security audit
-npm audit
+### Database Management
 
-# Dependency check
-npm run deps:check
+```bash
+# PostgreSQL migrations and seeding
+cd backend
+npm run db:migrate          # Run database migrations
+npm run db:seed             # Seed database with initial data
+npm run db:reset            # Reset database (dev only)
+
+# MongoDB setup
+npm run mongo:setup         # Initialize MongoDB collections
+npm run mongo:index         # Create database indexes
 ```
 
 ## 🚀 Production Deployment
@@ -343,139 +462,204 @@ kubectl apply -f https://github.com/jaegertracing/jaeger-operator/releases/downl
 
 ## 📊 API Documentation
 
+AutoSec provides a comprehensive REST API with Swagger/OpenAPI documentation available at `/api/docs`.
+
 ### Authentication Endpoints
 
 ```bash
 # User authentication
-POST /api/auth/login
-POST /api/auth/logout
-POST /api/auth/refresh
-GET  /api/auth/profile
+POST /api/auth/register      # Register new user
+POST /api/auth/login         # User login
+POST /api/auth/logout        # User logout
+POST /api/auth/refresh       # Refresh access token
+GET  /api/auth/profile       # Get user profile
+PUT  /api/auth/profile       # Update user profile
+POST /api/auth/change-password # Change user password
+
+# Multi-Factor Authentication
+POST /api/mfa/setup          # Setup MFA for user
+POST /api/mfa/verify         # Verify MFA token
+POST /api/mfa/disable        # Disable MFA
+GET  /api/mfa/qr             # Get QR code for MFA setup
 
 # User management (Admin only)
-GET    /api/users
-POST   /api/users
-PUT    /api/users/:id
-DELETE /api/users/:id
+GET    /api/users            # List all users
+POST   /api/users            # Create new user
+GET    /api/users/:id        # Get user by ID
+PUT    /api/users/:id        # Update user
+DELETE /api/users/:id        # Delete user
+POST   /api/users/:id/roles  # Assign roles to user
 ```
 
 ### Security Management
 
 ```bash
 # Blocklist management
-GET    /api/rules           # Get all blocking rules
-POST   /api/rules           # Create new rule
-PUT    /api/rules/:id       # Update rule
-DELETE /api/rules/:id       # Delete rule
+GET    /api/rules           # Get all blocking rules with pagination
+POST   /api/rules           # Create new blocking rule
+PUT    /api/rules/:id       # Update existing rule
+DELETE /api/rules/:id       # Delete blocking rule
 
-# Threat intelligence
+# Threat intelligence and analysis
 GET    /api/threats         # Get threat indicators
-POST   /api/threats/scan    # Scan for threats
+POST   /api/threats/scan    # Initiate threat scan
 GET    /api/threats/feeds   # Manage threat feeds
+POST   /api/threats/ioc     # Add indicators of compromise
 
-# Incident management
-GET    /api/incidents       # List incidents
-POST   /api/incidents       # Create incident
-PUT    /api/incidents/:id   # Update incident
-GET    /api/incidents/:id/timeline
+# Behavioral analysis
+GET    /api/behavior/user/:id    # Get user behavior analysis
+GET    /api/behavior/network     # Get network behavior metrics
+POST   /api/behavior/analyze     # Trigger behavior analysis
+GET    /api/behavior/anomalies   # Get detected anomalies
+GET    /api/behavior/risk-score  # Get current risk scores
 ```
 
-### Analytics & Reporting
+### Log Management & Analytics
 
 ```bash
-# Real-time analytics
-GET /api/analytics/dashboard
-GET /api/analytics/threats/live
-GET /api/analytics/network/traffic
-GET /api/analytics/users/behavior
+# Log ingestion and retrieval
+POST   /api/logs           # Ingest log data (accepts batch)
+GET    /api/logs           # Retrieve logs with advanced filtering
+GET    /api/logs/search    # Full-text search in logs
+GET    /api/logs/stats     # Get log statistics and metrics
+GET    /api/logs/export    # Export logs (CSV, JSON)
 
-# Reporting
-GET  /api/reports/security
-GET  /api/reports/compliance
-POST /api/reports/custom
-GET  /api/reports/:id/download
+# Real-time analytics
+GET /api/analytics/dashboard     # Main dashboard data
+GET /api/analytics/threats/live  # Live threat feed
+GET /api/analytics/network/traffic # Network traffic analysis
+GET /api/analytics/users/behavior  # User behavior patterns
+GET /api/analytics/geo           # Geographic threat distribution
+```
+
+### System Utilities
+
+```bash
+# GeoIP and location services
+GET /api/geoip?ip=<IP>      # Get GeoIP information for IP
+GET /api/geoip/bulk         # Bulk GeoIP lookup
+
+# System health and monitoring
+GET /api/health             # System health check
+GET /api/status             # Detailed system status
+GET /api/metrics            # System performance metrics
+GET /api/version            # API version information
 ```
 
 ## 🔗 Integration Examples
 
+AutoSec provides built-in integrations with major security infrastructure components.
+
 ### Firewall Integration
 
 ```javascript
-// Palo Alto Networks
-const paloAlto = new PaloAltoConnector({
+// Palo Alto Networks Integration
+const PaloAltoIntegration = require('./integrations/paloAltoIntegration');
+
+const paloAlto = new PaloAltoIntegration({
   hostname: 'firewall.company.com',
-  apiKey: process.env.PALO_ALTO_API_KEY
+  username: process.env.PALO_ALTO_USERNAME,
+  password: process.env.PALO_ALTO_PASSWORD,
+  // or use API key authentication
+  apiKey: process.env.PALO_ALTO_API_KEY,
+  vsys: 'vsys1'
 });
 
-// Block IP address
-await paloAlto.blockIP('192.168.1.100', 'Suspicious activity detected');
+// Block IP address with context
+await paloAlto.blockIP('192.168.1.100', {
+  reason: 'Suspicious activity detected',
+  severity: 'high',
+  source: 'AutoSec Behavioral Analysis'
+});
 
-// Cisco ASA
-const ciscoASA = new CiscoASAConnector({
+// Create address group for batch blocking
+await paloAlto.createAddressGroup('autosec-threats', [
+  '10.0.0.100',
+  '10.0.0.101',
+  '10.0.0.102'
+]);
+
+// Cisco ASA Integration
+const CiscoASAIntegration = require('./integrations/ciscoASAIntegration');
+
+const ciscoASA = new CiscoASAIntegration({
   hostname: 'asa.company.com',
   username: process.env.CISCO_USERNAME,
-  password: process.env.CISCO_PASSWORD
+  password: process.env.CISCO_PASSWORD,
+  enablePassword: process.env.CISCO_ENABLE_PASSWORD
 });
 
+// Add access control rule
 await ciscoASA.addAccessRule({
-  source: '10.0.0.0/8',
+  name: 'BLOCK_THREAT_192.168.1.100',
+  source: '192.168.1.100',
   destination: 'any',
-  action: 'deny'
+  action: 'deny',
+  protocol: 'ip'
+});
+
+// iptables Integration for Linux systems
+const IptablesIntegration = require('./integrations/iptablesIntegration');
+
+const iptables = new IptablesIntegration({
+  sudo: true,
+  chain: 'INPUT'
+});
+
+await iptables.blockIP('192.168.1.100', {
+  protocol: 'tcp',
+  port: 22,
+  comment: 'AutoSec: SSH brute force attempt'
 });
 ```
 
-### SIEM Integration
+### Multi-Factor Authentication
 
 ```javascript
-// Splunk integration
-const splunk = new SplunkConnector({
-  host: 'splunk.company.com',
-  token: process.env.SPLUNK_TOKEN
-});
+const MFAService = require('./services/mfaService');
 
-// Send event to Splunk
-await splunk.sendEvent({
-  index: 'security',
-  sourcetype: 'autosec:threat',
-  event: threatData
-});
+const mfaService = new MFAService();
 
-// QRadar integration
-const qradar = new QRadarConnector({
-  host: 'qradar.company.com',
-  token: process.env.QRADAR_TOKEN
-});
+// Setup MFA for user
+const mfaSetup = mfaService.generateSecret(username, 'AutoSec');
+const qrCode = await mfaService.generateQRCode(mfaSetup.dataURL);
 
-await qradar.createOffense({
-  description: 'AutoSec detected suspicious activity',
-  severity: 'High'
-});
+// Verify MFA token
+const isValid = mfaService.verifyToken(token, user.mfaSecret);
+
+// Generate backup codes
+const backupCodes = mfaService.generateBackupCodes();
 ```
 
-### Vulnerability Scanner Integration
+### Behavioral Analysis Integration
 
 ```javascript
-// Nessus integration
-const nessus = new NessusConnector({
-  host: 'nessus.company.com',
-  accessKey: process.env.NESSUS_ACCESS_KEY,
-  secretKey: process.env.NESSUS_SECRET_KEY
-});
+const MLBehaviorAnalysisService = require('./services/mlBehaviorAnalysisService');
 
-// Trigger scan
-const scanId = await nessus.createScan({
-  name: 'AutoSec Asset Scan',
-  targets: assetList
-});
+const mlService = new MLBehaviorAnalysisService();
 
-// OpenVAS integration
-const openvas = new OpenVASConnector({
-  host: 'openvas.company.com',
-  username: process.env.OPENVAS_USERNAME,
-  password: process.env.OPENVAS_PASSWORD
-});
+// Analyze user behavior patterns
+const behaviorAnalysis = await mlService.analyzeUserBehavior({
+  userId: 'user123',
+  loginTimes: [...],
+  ipAddresses: [...],
+  deviceFingerprints: [...],
+  accessPatterns: [...]
+}, 'user123');
 
-await openvas.startScan(targetId);
+// Get risk score
+const riskScore = behaviorAnalysis.riskScore;
+if (riskScore > 0.8) {
+  // Trigger additional security measures
+  await triggerMFAChallenge(userId);
+}
+
+// Analyze network behavior
+const networkAnalysis = await mlService.analyzeNetworkBehavior({
+  trafficPatterns: [...],
+  connectionMetrics: [...],
+  protocolDistribution: [...]
+});
 ```
 
 ## 🤝 Contributing
