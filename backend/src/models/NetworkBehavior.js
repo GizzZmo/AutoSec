@@ -158,6 +158,38 @@ const networkBehaviorSchema = new mongoose.Schema({
       duration: Number,
     },
   }],
+  mlAnalysis: {
+    anomalies: {
+      detections: [{
+        type: String,
+        feature: String,
+        method: String,
+        score: Number,
+        value: Number,
+        baseline: mongoose.Schema.Types.Mixed,
+        severity: { type: String, enum: ['low', 'medium', 'high', 'critical'] },
+      }],
+      scores: mongoose.Schema.Types.Mixed,
+      ensembleScore: { type: Number, default: 0 },
+      isAnomalous: { type: Boolean, default: false },
+    },
+    trafficClassification: {
+      category: String,
+      confidence: Number,
+      protocols: [String],
+    },
+    threatDetection: {
+      level: { type: String, enum: ['low', 'medium', 'high', 'critical'] },
+      threats: [String],
+      confidence: Number,
+    },
+    communicationPatterns: {
+      patterns: [String],
+      anomalies: [String],
+    },
+    features: mongoose.Schema.Types.Mixed,
+    timestamp: { type: Date, default: Date.now },
+  },
   mlPredictions: {
     isMalicious: {
       probability: { type: Number, min: 0, max: 1, default: 0 },
