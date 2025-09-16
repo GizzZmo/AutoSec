@@ -1,0 +1,142 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # Backend testing and linting
+  backend:
+    runs-on: ubuntu-latest
+    name: Backend CI
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+        
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+      
+    - name: Run backend linting
+      working-directory: ./backend
+      run: npm run lint
+      
+    - name: Run backend tests
+      working-directory: ./backend
+      run: npm test -- --passWithNoTests --coverage
+      
+    - name: Upload backend coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend/coverage/lcov.info
+        flags: backend
+        
+  # Frontend testing and linting  
+  frontend:
+    runs-on: ubuntu-latest
+    name: Frontend CI
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+        
+    - name: Install frontend dependencies
+      working-directory: ./frontend
+      run: npm ci
+      
+    - name: Run frontend tests
+      working-directory: ./frontend
+      run: npm test -- --coverage --watchAll=false
+      env:
+        CI: false # Disable treating warnings as errors for now
+        
+    - name: Build frontend
+      working-directory: ./frontend
+      run: npm run build
+      env:
+        CI: false # Disable treating warnings as errors for now
+        
+    - name: Upload frontend coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./frontend/coverage/lcov.info
+        flags: frontend
+
+  # Docker build validation
+  docker:
+    runs-on: ubuntu-latest
+    name: Docker Build
+    needs: [backend, frontend]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build backend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        push: false
+        tags: autosec-backend:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Build frontend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        push: false
+        tags: autosec-frontend:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Validate docker-compose
+      run: |
+        docker compose -f docker-compose.yml config
+        
+  # Security scanning
+  security:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    needs: [backend, frontend]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'

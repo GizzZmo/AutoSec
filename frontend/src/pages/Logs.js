@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 
 function Logs() {
@@ -20,11 +20,7 @@ function Logs() {
     totalLogs: 0,
   });
 
-  useEffect(() => {
-    fetchLogs();
-  }, [filters.page, filters.limit]); // Refetch when page or limit changes
-
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -42,7 +38,11 @@ function Logs() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]); // Now properly includes fetchLogs dependency
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

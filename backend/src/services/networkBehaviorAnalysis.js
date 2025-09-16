@@ -146,11 +146,12 @@ class NetworkBehaviorAnalyzer {
       case 'mac':
         query['metadata.macAddress'] = identifier;
         break;
-      case 'subnet':
+      case 'subnet': {
         // For subnet analysis, match IPs in the range (simplified)
         const [network, prefix] = identifier.split('/');
         query.ip_address = { $regex: `^${network.split('.').slice(0, Math.floor(prefix / 8)).join('\\.')}` };
         break;
+      }
       case 'device':
         query.device_id = identifier;
         break;
