@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database Service
   autosec-postgres:
@@ -14,6 +12,11 @@ services:
       - ./database/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432" # Expose for local DB tools if needed
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autosec_user -d autosec_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # MongoDB Database Service
   autosec-mongodb:
@@ -23,6 +26,26 @@ services:
       - mongodb_data:/data/db
     ports:
       - "27017:27017" # Expose for local DB tools if needed
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Service (for caching and session management)
+  autosec-redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # RabbitMQ Message Broker Service
   autosec-rabbitmq:
@@ -31,44 +54,93 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     ports:
       - "5672:5672" # AMQP protocol port
       - "15672:15672" # Management UI port
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # AutoSec Backend Service
   autosec-backend:
     build: ./backend
     restart: always
     environment:
+      NODE_ENV: ${NODE_ENV:-development}
       PORT: 8080
+      API_VERSION: 1.0.0
+      
+      # Security
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRES_IN: 24h
+      JWT_REFRESH_EXPIRES_IN: 7d
+      
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      
+      # Database connections
       PG_HOST: autosec-postgres
       PG_PORT: 5432
       PG_USER: autosec_user
       PG_PASSWORD: autosec_password
       PG_DATABASE: autosec_db
       MONGO_URI: mongodb://autosec-mongodb:27017/autosec_logs
+      REDIS_URL: redis://autosec-redis:6379
+      
+      # Message queue
       RABBITMQ_URL: amqp://guest:guest@autosec-rabbitmq:5672
-      GEOIP_DB_PATH: /app/data/geoip/GeoLite2-City.mmdb # Path inside the container
+      
+      # GeoIP
+      GEOIP_DB_PATH: /app/data/geoip/GeoLite2-City.mmdb
+      
+      # Frontend URL for CORS
+      FRONTEND_URL: http://localhost:3000
+      
     volumes:
       - ./data/geoip:/app/data/geoip:ro # Mount GeoIP data read-only
+      - ./backend/logs:/app/logs # Mount logs directory
+      - ./backend/uploads:/app/uploads # Mount uploads directory
     ports:
       - "8080:8080"
     depends_on:
-      - autosec-postgres
-      - autosec-mongodb
-      - autosec-rabbitmq
+      autosec-postgres:
+        condition: service_healthy
+      autosec-mongodb:
+        condition: service_healthy
+      autosec-redis:
+        condition: service_healthy
+      autosec-rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # AutoSec Frontend Service
   autosec-frontend:
     build: ./frontend
     restart: always
     environment:
-      REACT_APP_API_BASE_URL: http://localhost:8080/api # Connects to backend via host machine's localhost
+      REACT_APP_API_BASE_URL: http://localhost:8080/api
+      REACT_APP_VERSION: 1.0.0
     ports:
       - "3000:80" # Nginx serves React build on port 80 inside container
     depends_on:
-      - autosec-backend
+      autosec-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   postgres_data:
   mongodb_data:
+  redis_data:
+  rabbitmq_data:
