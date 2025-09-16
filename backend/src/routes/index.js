@@ -22,6 +22,7 @@ const {
 // Import route modules
 const authRoutes = require('./auth');
 const userRoutes = require('./users');
+const behaviorRoutes = require('./behavior');
 
 // Swagger configuration
 const swaggerOptions = {
@@ -67,6 +68,7 @@ router.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, {
 // API routes with authentication and rate limiting
 router.use('/auth', generalRateLimit, authRoutes);
 router.use('/users', generalRateLimit, userRoutes);
+router.use('/behavior', generalRateLimit, behaviorRoutes);
 
 /**
  * @swagger

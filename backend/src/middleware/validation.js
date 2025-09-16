@@ -290,4 +290,137 @@ exports.validateLogFilters = [
     .withMessage('Search term must be less than 200 characters'),
 ];
 
+// User behavior analysis validation
+exports.validateUserBehaviorAnalysis = [
+  body('userId')
+    .isUUID()
+    .withMessage('User ID must be a valid UUID'),
+  
+  body('endDate')
+    .optional()
+    .isISO8601()
+    .withMessage('End date must be a valid ISO 8601 date'),
+];
+
+// Network behavior analysis validation
+exports.validateNetworkBehaviorAnalysis = [
+  body('identifier')
+    .trim()
+    .notEmpty()
+    .withMessage('Identifier is required'),
+  
+  body('identifierType')
+    .isIn(['ip', 'mac', 'subnet', 'device'])
+    .withMessage('Identifier type must be one of: ip, mac, subnet, device'),
+  
+  body('endDate')
+    .optional()
+    .isISO8601()
+    .withMessage('End date must be a valid ISO 8601 date'),
+  
+  body('identifier')
+    .custom((value, { req }) => {
+      const type = req.body.identifierType;
+      
+      if (type === 'ip') {
+        const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+        if (!ipRegex.test(value)) {
+          throw new Error('Invalid IP address format');
+        }
+      } else if (type === 'subnet') {
+        const cidrRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}\/(?:[0-9]|[1-2][0-9]|3[0-2])$/;
+        if (!cidrRegex.test(value)) {
+          throw new Error('Invalid CIDR format');
+        }
+      } else if (type === 'mac') {
+        const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+        if (!macRegex.test(value)) {
+          throw new Error('Invalid MAC address format');
+        }
+      } else if (type === 'device') {
+        if (value.length < 1 || value.length > 100) {
+          throw new Error('Device ID must be between 1 and 100 characters');
+        }
+      }
+      
+      return true;
+    }),
+];
+
+// Threat event status update validation
+exports.validateThreatEventStatusUpdate = [
+  body('status')
+    .isIn(['new', 'investigating', 'confirmed', 'false_positive', 'resolved', 'suppressed'])
+    .withMessage('Status must be one of: new, investigating, confirmed, false_positive, resolved, suppressed'),
+  
+  body('comment')
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage('Comment must be less than 500 characters'),
+  
+  body('assignedTo')
+    .optional()
+    .isUUID()
+    .withMessage('Assigned to must be a valid UUID'),
+];
+
+// Bulk user analysis validation
+exports.validateBulkUserAnalysis = [
+  body('userIds')
+    .isArray({ min: 1, max: 50 })
+    .withMessage('userIds must be an array with 1-50 elements'),
+  
+  body('userIds.*')
+    .isUUID()
+    .withMessage('Each user ID must be a valid UUID'),
+  
+  body('endDate')
+    .optional()
+    .isISO8601()
+    .withMessage('End date must be a valid ISO 8601 date'),
+];
+
+// Threat event filtering validation
+exports.validateThreatEventFilters = [
+  query('severity')
+    .optional()
+    .isIn(['info', 'low', 'medium', 'high', 'critical'])
+    .withMessage('Severity must be one of: info, low, medium, high, critical'),
+  
+  query('status')
+    .optional()
+    .isIn(['new', 'investigating', 'confirmed', 'false_positive', 'resolved', 'suppressed'])
+    .withMessage('Status must be one of: new, investigating, confirmed, false_positive, resolved, suppressed'),
+  
+  query('eventType')
+    .optional()
+    .isIn(['anomaly_detection', 'behavioral_deviation', 'threat_intelligence_match', 'ml_prediction', 'rule_violation', 'correlation_match', 'manual_investigation'])
+    .withMessage('Event type must be a valid threat event type'),
+  
+  query('search')
+    .optional()
+    .trim()
+    .isLength({ max: 200 })
+    .withMessage('Search term must be less than 200 characters'),
+  
+  query('startDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Start date must be a valid ISO 8601 date'),
+  
+  query('endDate')
+    .optional()
+    .isISO8601()
+    .withMessage('End date must be a valid ISO 8601 date'),
+];
+
+// Behavioral analysis statistics validation
+exports.validateBehaviorStatsQuery = [
+  query('period')
+    .optional()
+    .matches(/^\d+d$/)
+    .withMessage('Period must be in format "7d", "30d", etc.'),
+];
+
 module.exports = exports;
