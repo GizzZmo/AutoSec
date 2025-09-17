@@ -122,6 +122,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Security Scan
     needs: [backend, frontend]
+    permissions:
+      security-events: write
     
     steps:
     - name: Checkout code
