@@ -601,23 +601,33 @@ class AssetDiscoveryService {
     
     try {
       records.a = await dns.resolve4(domain);
-    } catch (error) {}
+    } catch (error) {
+      // Ignore DNS resolution errors - record type may not exist
+    }
     
     try {
       records.aaaa = await dns.resolve6(domain);
-    } catch (error) {}
+    } catch (error) {
+      // Ignore DNS resolution errors - record type may not exist
+    }
     
     try {
       records.mx = await dns.resolveMx(domain);
-    } catch (error) {}
+    } catch (error) {
+      // Ignore DNS resolution errors - record type may not exist
+    }
     
     try {
       records.txt = await dns.resolveTxt(domain);
-    } catch (error) {}
+    } catch (error) {
+      // Ignore DNS resolution errors - record type may not exist
+    }
     
     try {
       records.cname = await dns.resolveCname(domain);
-    } catch (error) {}
+    } catch (error) {
+      // Ignore DNS resolution errors - record type may not exist
+    }
 
     return records;
   }
