@@ -438,7 +438,7 @@ class ThreatIntelligenceService {
     
     // Simple regex patterns for common indicator types
     const ipPattern = /\b(?:\d{1,3}\.){3}\d{1,3}\b/g;
-    const domainPattern = /\b[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*\b/g;
+    const domainPattern = /\b[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\b/g;
     const hashPattern = /\b[a-fA-F0-9]{32,64}\b/g;
 
     const matches = [
@@ -647,7 +647,7 @@ class ThreatIntelligenceService {
     if (/^[a-fA-F0-9]{32}$/.test(value)) return 'md5';
     if (/^[a-fA-F0-9]{40}$/.test(value)) return 'sha1';
     if (/^[a-fA-F0-9]{64}$/.test(value)) return 'sha256';
-    if (/^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$/.test(value)) return 'domain';
+    if (/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(value)) return 'domain';
     return 'unknown';
   }
 }

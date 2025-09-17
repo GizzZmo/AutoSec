@@ -614,9 +614,10 @@ class WorkflowEngine extends EventEmitter {
     const firewallManager = require('../integrations/firewallIntegrationManager');
     
     switch (config.action) {
-      case 'block_ip':
+      case 'block_ip': {
         const ipAddress = this.resolveVariable(config.ipAddress, execution.variables);
         return await firewallManager.blockIP(ipAddress, config.options);
+      }
       case 'create_rule':
         return await firewallManager.createSecurityRule(config.rule, config.targets);
       default:
@@ -628,12 +629,14 @@ class WorkflowEngine extends EventEmitter {
     const siemManager = require('../integrations/siemIntegrationManager');
     
     switch (config.action) {
-      case 'send_event':
+      case 'send_event': {
         const event = this.resolveVariable(config.event, execution.variables);
         return await siemManager.sendEvent(event);
-      case 'create_alert':
+      }
+      case 'create_alert': {
         const alert = this.resolveVariable(config.alert, execution.variables);
         return await siemManager.createAlert(alert);
+      }
       default:
         throw new Error(`Unknown SIEM action: ${config.action}`);
     }
@@ -645,9 +648,10 @@ class WorkflowEngine extends EventEmitter {
     switch (config.action) {
       case 'start_scan':
         return await vulnManager.startScan(config.scanConfig, config.targets);
-      case 'get_results':
+      case 'get_results': {
         const scanId = this.resolveVariable(config.scanId, execution.variables);
         return await vulnManager.getScanResults(scanId);
+      }
       default:
         throw new Error(`Unknown vulnerability scanner action: ${config.action}`);
     }
@@ -657,9 +661,10 @@ class WorkflowEngine extends EventEmitter {
     const sdnManager = require('../integrations/sdnIntegrationManager');
     
     switch (config.action) {
-      case 'block_ip':
+      case 'block_ip': {
         const ipAddress = this.resolveVariable(config.ipAddress, execution.variables);
         return await sdnManager.blockIP(ipAddress, config.options);
+      }
       case 'create_flow_rule':
         return await sdnManager.createFlowRule(config.rule, config.targets);
       default:
