@@ -1,0 +1,104 @@
+# Prometheus configuration for AutoSec monitoring
+prometheus:
+  enabled: true
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    retention: 30d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+      requests:
+        cpu: 1000m
+        memory: 2Gi
+    additionalScrapeConfigs:
+      - job_name: 'autosec-backend'
+        static_configs:
+        - targets: ['autosec-backend.autosec.svc.cluster.local:8080']
+        metrics_path: '/metrics'
+        scrape_interval: 15s
+      - job_name: 'autosec-databases'
+        static_configs:
+        - targets: 
+          - 'postgres.autosec.svc.cluster.local:5432'
+          - 'mongodb.autosec.svc.cluster.local:27017'
+          - 'redis.autosec.svc.cluster.local:6379'
+          - 'rabbitmq.autosec.svc.cluster.local:15672'
+        scrape_interval: 30s
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - autosec
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+
+grafana:
+  enabled: true
+  adminPassword: autosec-admin-password
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server:80
+        access: proxy
+        isDefault: true
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'autosec-dashboards'
+        orgId: 1
+        folder: 'AutoSec'
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/autosec
+
+alertmanager:
+  enabled: true
+  config:
+    global:
+      smtp_smarthost: 'localhost:587'
+      smtp_from: 'alerts@autosec.local'
+    route:
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 1h
+      receiver: 'web.hook'
+    receivers:
+    - name: 'web.hook'
+      webhook_configs:
+      - url: 'http://autosec-backend.autosec.svc.cluster.local:8080/api/alerts/webhook'
+  persistence:
+    enabled: true
+    size: 2Gi
