@@ -6,46 +6,41 @@ Welcome to the comprehensive documentation for AutoSec, the advanced cybersecuri
 
 ### User Guides
 - [Getting Started](user-guide/getting-started.md) - Quick start guide for new users
-- [Dashboard Overview](user-guide/dashboard.md) - Understanding the main dashboard
-- [Threat Management](user-guide/threat-management.md) - Managing threats and blocklists
-- [Behavioral Analysis](user-guide/behavioral-analysis.md) - Using AI-powered behavior analytics
-- [Reporting and Analytics](user-guide/reporting.md) - Generating reports and insights
+- [Complete Setup Tutorial](tutorials/complete-setup-tutorial.md) - Comprehensive walkthrough with dashboard overview
+- [API Reference](api/endpoints.md) - Complete API documentation for threat management
+- [Architecture Overview](developer-guide/architecture.md) - System design including behavioral analysis
+- [Security Architecture](security/architecture.md) - Security features and reporting
 
 ### Developer Documentation
-- [Development Setup](developer-guide/setup.md) - Setting up development environment
 - [Architecture Overview](developer-guide/architecture.md) - System architecture and design
-- [API Integration](developer-guide/api-integration.md) - Integrating with AutoSec APIs
-- [Custom Integrations](developer-guide/custom-integrations.md) - Building custom connectors
-- [Contributing Guide](developer-guide/contributing.md) - How to contribute to the project
+- [API Integration](api/endpoints.md) - Complete API reference and integration guide
+- [Contributing Guide](../CONTRIBUTING.md) - How to contribute to the project
+- [Installation Guide](deployment/installation.md) - Development environment setup
+- [Enterprise Deployment](deployment/enterprise-deployment-guide.md) - Production deployment
 
 ### API Documentation
-- [Authentication](api/authentication.md) - API authentication and authorization
-- [Endpoints Reference](api/endpoints.md) - Complete API endpoints documentation
-- [Data Models](api/data-models.md) - API data structures and schemas
-- [Rate Limiting](api/rate-limiting.md) - API usage limits and best practices
-- [SDK and Libraries](api/sdks.md) - Official SDKs and client libraries
+- [Complete API Reference](api/endpoints.md) - All endpoints, authentication, and data models
+- [Installation Guide](deployment/installation.md) - API setup and configuration
+- [Architecture Overview](developer-guide/architecture.md) - API architecture and integration patterns
+- [Security Documentation](security/architecture.md) - API security and rate limiting best practices
 
 ### Deployment and Operations
 - [Installation Guide](deployment/installation.md) - Complete installation instructions
-- [Docker Deployment](deployment/docker.md) - Docker and Docker Compose setup
-- [Kubernetes Deployment](deployment/kubernetes.md) - Kubernetes deployment guide
-- [High Availability](deployment/high-availability.md) - HA configuration and best practices
-- [Monitoring and Logging](deployment/monitoring.md) - System monitoring and log management
-- [Backup and Recovery](deployment/backup.md) - Data backup and disaster recovery
+- [Enterprise Deployment](deployment/enterprise-deployment-guide.md) - Production deployment guide
+- [Architecture Overview](developer-guide/architecture.md) - System architecture including Kubernetes and Docker
+- [Security Architecture](security/architecture.md) - Security hardening and monitoring
 
 ### Security Documentation
-- [Security Architecture](security/architecture.md) - Security design and principles
-- [Threat Model](security/threat-model.md) - Security threats and mitigations
-- [Hardening Guide](security/hardening.md) - System hardening best practices
-- [Compliance](security/compliance.md) - Regulatory compliance information
-- [Security Best Practices](security/best-practices.md) - Operational security guidelines
+- [Security Architecture](security/architecture.md) - Comprehensive security design and principles
+- [Installation Guide](deployment/installation.md) - Security configuration and hardening
+- [API Security](api/endpoints.md) - API security, authentication, and best practices
+- [Developer Guide](developer-guide/architecture.md) - Security development practices
 
 ### Tutorials and Examples
-- [Basic Setup Tutorial](tutorials/basic-setup.md) - Step-by-step setup walkthrough
-- [Firewall Integration](tutorials/firewall-integration.md) - Configuring firewall integrations
-- [ML Model Training](tutorials/ml-training.md) - Training custom ML models
-- [Custom Dashboard](tutorials/custom-dashboard.md) - Creating custom dashboards
-- [API Examples](tutorials/api-examples.md) - Common API usage examples
+- [Complete Setup Tutorial](tutorials/complete-setup-tutorial.md) - Comprehensive step-by-step setup walkthrough
+- [API Examples](api/endpoints.md) - Common API usage examples and integration patterns
+- [Architecture Guide](developer-guide/architecture.md) - Understanding system design and components
+- [Installation Examples](deployment/installation.md) - Various deployment scenarios and configurations
 
 ## 🚀 Quick Links
 
@@ -55,14 +50,14 @@ Welcome to the comprehensive documentation for AutoSec, the advanced cybersecuri
 - **Looking for API docs?** Visit the [API Reference](api/endpoints.md)
 
 ### For Developers
-- **Want to contribute?** Read the [Contributing Guide](developer-guide/contributing.md)
-- **Building integrations?** See [Custom Integrations](developer-guide/custom-integrations.md)
+- **Want to contribute?** Read the [Contributing Guide](../CONTRIBUTING.md)
+- **Building integrations?** See [API Documentation](api/endpoints.md) and [Architecture Overview](developer-guide/architecture.md)
 - **Understanding the code?** Review the [Architecture Overview](developer-guide/architecture.md)
 
 ### For Administrators
-- **Deploying in production?** Follow the [Deployment Guide](deployment/installation.md)
-- **Security concerns?** Review the [Security Documentation](security/architecture.md)
-- **Need high availability?** See [HA Configuration](deployment/high-availability.md)
+- **Deploying in production?** Follow the [Installation Guide](deployment/installation.md) and [Enterprise Deployment Guide](deployment/enterprise-deployment-guide.md)
+- **Security concerns?** Review the [Security Architecture](security/architecture.md)
+- **Need high availability?** See [Enterprise Deployment Guide](deployment/enterprise-deployment-guide.md) for HA configuration
 
 ## 🆘 Getting Help
 
@@ -81,4 +76,4 @@ Welcome to the comprehensive documentation for AutoSec, the advanced cybersecuri
 
 ---
 
-*This documentation is continuously updated. Last updated: January 2025*
+*This documentation is continuously updated. Last updated: September 2025*

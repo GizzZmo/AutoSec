@@ -109,9 +109,15 @@ curl http://localhost:8080/api/health
 # Test GeoIP functionality
 curl "http://localhost:8080/api/geoip?ip=8.8.8.8"
 
-# Check service logs
+# Check all services are running
+docker compose ps
+
+# View service logs
 docker compose logs -f autosec-backend
 docker compose logs -f autosec-frontend
+
+# Test database connections
+docker compose exec autosec-backend npm run db:migrate -- --dry-run
 ```
 
 ## 🏗️ Architecture Overview
@@ -392,9 +398,9 @@ npm run mongo:index         # Create database indexes
 AutoSec is designed for cloud-native deployment with Kubernetes support:
 
 ```bash
-# Deploy with Helm
-helm repo add autosec https://charts.autosec.io
-helm install autosec autosec/autosec-platform
+# Deploy with Helm (coming soon)
+# helm repo add autosec https://gizzmo.github.io/AutoSec-helm-charts
+# helm install autosec autosec/autosec-platform
 
 # Or use kubectl
 kubectl apply -f k8s/namespace.yaml
@@ -683,9 +689,9 @@ We welcome contributions to AutoSec! Please see our [Contributing Guide](CONTRIB
 
 ### Reporting Issues
 
-- **Security Issues**: Report privately to security@autosec.io
-- **Bug Reports**: Use GitHub Issues with detailed reproduction steps
-- **Feature Requests**: Use GitHub Discussions for community input
+- **Security Issues**: Report privately via [GitHub Security Advisories](https://github.com/GizzZmo/AutoSec/security/advisories)
+- **Bug Reports**: Use [GitHub Issues](https://github.com/GizzZmo/AutoSec/issues) with detailed reproduction steps
+- **Feature Requests**: Use [GitHub Discussions](https://github.com/GizzZmo/AutoSec/discussions) for community input
 
 ## 📄 License
 
@@ -693,10 +699,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-- **Documentation**: https://docs.autosec.io
-- **Community Forum**: https://community.autosec.io
-- **Enterprise Support**: support@autosec.io
-- **Security Contact**: security@autosec.io
+- **Documentation**: [Project Documentation](docs/README.md) and [GitHub Wiki](https://github.com/GizzZmo/AutoSec/wiki)
+- **Community Forum**: [GitHub Discussions](https://github.com/GizzZmo/AutoSec/discussions)
+- **Bug Reports & Feature Requests**: [GitHub Issues](https://github.com/GizzZmo/AutoSec/issues)
+- **Security Issues**: Report privately via [GitHub Security Advisories](https://github.com/GizzZmo/AutoSec/security/advisories)
 
 ## 🙏 Acknowledgments
 

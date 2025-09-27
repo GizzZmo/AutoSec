@@ -24,7 +24,7 @@ Thank you for your interest in contributing to AutoSec! This guide will help you
 Before contributing, ensure you have:
 - **Git**: Version control system
 - **Docker & Docker Compose**: For running the development environment
-- **Node.js 18+**: For backend development
+- **Node.js 18+**: For backend development (Node.js 20+ recommended)
 - **npm or yarn**: Package manager
 - **Code Editor**: VS Code, IntelliJ, or your preferred editor
 
@@ -441,9 +441,9 @@ We value all contributions and provide recognition through:
 ## 📚 Additional Resources
 
 ### Learning Resources
-- **Architecture Guide**: [docs/developer-guide/architecture.md](../developer-guide/architecture.md)
-- **API Documentation**: [docs/api/endpoints.md](../api/endpoints.md)
-- **Security Guide**: [docs/security/architecture.md](../security/architecture.md)
+- **Architecture Guide**: [docs/developer-guide/architecture.md](docs/developer-guide/architecture.md)
+- **API Documentation**: [docs/api/endpoints.md](docs/api/endpoints.md)
+- **Security Guide**: [docs/security/architecture.md](docs/security/architecture.md)
 
 ### Communication Channels
 - **GitHub Discussions**: General questions and ideas

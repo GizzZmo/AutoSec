@@ -594,12 +594,12 @@ const healthCheck = async (req, res) => {
 
 ```dockerfile
 # Multi-stage Dockerfile for backend
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S autosec -u 1001
 

@@ -17,7 +17,7 @@ Before installing AutoSec, ensure your system meets the following requirements:
 - **Docker**: 20.10+ (Latest version recommended)
 - **Docker Compose**: 2.0+ 
 - **Git**: Latest version
-- **Node.js**: 18+ (for development only)
+- **Node.js**: 18+ (for development only, 20+ recommended)
 - **curl**: For testing API endpoints
 
 ### GeoIP Database
