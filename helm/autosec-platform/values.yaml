@@ -1,0 +1,265 @@
+# Default values for autosec-platform
+# This is a YAML-formatted file.
+
+global:
+  domain: autosec.local
+  storageClass: ""
+  imageRegistry: ""
+  imagePullSecrets: []
+  
+# AutoSec Backend Configuration
+backend:
+  enabled: true
+  image:
+    repository: autosec/backend
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  
+  replicaCount: 3
+  
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  
+  auth:
+    jwtSecret: ""
+    jwtExpiresIn: "24h"
+  
+  env: {}
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+              - autosec-backend
+          topologyKey: kubernetes.io/hostname
+
+# AutoSec Frontend Configuration
+frontend:
+  enabled: true
+  image:
+    repository: autosec/frontend
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  
+  replicaCount: 2
+  
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 70
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: "{{ .Values.global.domain }}"
+      paths:
+        - path: /api
+          pathType: Prefix
+          service: autosec-backend
+        - path: /
+          pathType: Prefix
+          service: autosec-frontend
+  tls:
+    - secretName: autosec-tls
+      hosts:
+        - "{{ .Values.global.domain }}"
+
+# PostgreSQL Database Configuration
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: ""
+    username: autosec
+    password: ""
+    database: autosec
+  primary:
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+    persistence:
+      enabled: true
+      size: 20Gi
+  readReplicas:
+    replicaCount: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+
+# MongoDB Configuration
+mongodb:
+  enabled: true
+  auth:
+    enabled: true
+    rootPassword: ""
+    username: autosec
+    password: ""
+    database: autosec_logs
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  persistence:
+    enabled: true
+    size: 50Gi
+  replicaCount: 3
+
+# Redis Configuration
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: ""
+  master:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    persistence:
+      enabled: true
+      size: 8Gi
+  replica:
+    replicaCount: 2
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# RabbitMQ Configuration  
+rabbitmq:
+  enabled: true
+  auth:
+    username: autosec
+    password: ""
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  persistence:
+    enabled: true
+    size: 8Gi
+  clustering:
+    enabled: true
+    replicaCount: 3
+
+# Security Configuration
+security:
+  networkPolicies:
+    enabled: true
+  podSecurityPolicy:
+    enabled: true
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+
+# Monitoring and Observability
+monitoring:
+  prometheus:
+    enabled: true
+    serviceMonitor: true
+  grafana:
+    enabled: true
+    dashboards: true
+  alerts:
+    enabled: true
+
+# High Availability Configuration
+ha:
+  enabled: true
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+  
+# Backup Configuration
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retention: "30d"
+  storage:
+    type: s3
+    s3:
+      bucket: ""
+      region: ""
+      accessKey: ""
+      secretKey: ""
+
+# Service Mesh Integration
+serviceMesh:
+  istio:
+    enabled: false
+    sidecarInjection: true
+    gateways:
+      enabled: true
+    virtualServices:
+      enabled: true

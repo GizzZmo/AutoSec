@@ -1,0 +1,55 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: autosec-backend-pdb
+  namespace: autosec
+  labels:
+    app: autosec-backend
+    component: backend
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: autosec-backend
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: autosec-frontend-pdb
+  namespace: autosec
+  labels:
+    app: autosec-frontend
+    component: frontend
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: autosec-frontend
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: postgres-pdb
+  namespace: autosec
+  labels:
+    app: postgres
+    component: database
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: postgres
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: mongodb-pdb
+  namespace: autosec
+  labels:
+    app: mongodb
+    component: database
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: mongodb

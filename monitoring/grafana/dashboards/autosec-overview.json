@@ -1,0 +1,91 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "AutoSec Security Overview",
+    "description": "Comprehensive security monitoring dashboard for AutoSec platform",
+    "tags": ["autosec", "security", "overview"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Threat Detection Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(autosec_threats_detected_total[5m])",
+            "legendFormat": "Threats/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 5},
+                {"color": "red", "value": 10}
+              ]
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Active Blocked IPs",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "autosec_blocked_ips_total",
+            "legendFormat": "Blocked IPs"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Security Events Timeline",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(autosec_security_events_total[1m])",
+            "legendFormat": "Events/min"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "fillOpacity": 10,
+              "gradientMode": "none"
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      }
+    ]
+  }
+}
