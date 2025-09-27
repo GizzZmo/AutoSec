@@ -1,0 +1,88 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: autosec-backend-metrics
+  namespace: autosec
+  labels:
+    app: autosec-backend
+    component: backend
+spec:
+  selector:
+    matchLabels:
+      app: autosec-backend
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: autosec-database-metrics
+  namespace: autosec
+  labels:
+    app: autosec
+    component: monitoring
+spec:
+  selector:
+    matchLabels:
+      component: database
+  endpoints:
+  - port: http
+    interval: 60s
+    scrapeTimeout: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: autosec-alerts
+  namespace: autosec
+  labels:
+    app: autosec
+    component: monitoring
+spec:
+  groups:
+  - name: autosec.security
+    rules:
+    - alert: HighThreatDetectionRate
+      expr: rate(autosec_threats_detected_total[5m]) > 10
+      for: 2m
+      labels:
+        severity: critical
+        component: security
+      annotations:
+        summary: "High threat detection rate on AutoSec"
+        description: "AutoSec is detecting {{ $value }} threats per second over the last 5 minutes"
+    
+    - alert: SuspiciousLoginActivity
+      expr: rate(autosec_failed_logins_total[5m]) > 5
+      for: 1m
+      labels:
+        severity: warning
+        component: authentication
+      annotations:
+        summary: "Suspicious login activity detected"
+        description: "High rate of failed login attempts: {{ $value }} per second"
+
+  - name: autosec.performance
+    rules:
+    - alert: HighResponseTime
+      expr: histogram_quantile(0.95, rate(autosec_http_request_duration_seconds_bucket[5m])) > 0.5
+      for: 5m
+      labels:
+        severity: warning
+        component: performance
+      annotations:
+        summary: "High response time on AutoSec API"
+        description: "95th percentile response time is {{ $value }}s"
+
+    - alert: HighErrorRate
+      expr: rate(autosec_http_requests_total{status=~"5.."}[5m]) / rate(autosec_http_requests_total[5m]) > 0.05
+      for: 3m
+      labels:
+        severity: critical
+        component: reliability
+      annotations:
+        summary: "High error rate on AutoSec API"
+        description: "Error rate is {{ $value | humanizePercentage }}"
