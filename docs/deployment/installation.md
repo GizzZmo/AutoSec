@@ -27,7 +27,7 @@ This comprehensive guide covers installation options for AutoSec, from local dev
 - **curl**: For API testing and health checks
 
 **Optional (for development):**
-- **Node.js**: 18+ for local development
+- **Node.js**: 18+ for local development (20+ recommended)
 - **npm/yarn**: Package manager
 - **PostgreSQL Client**: For database management
 - **MongoDB Compass**: For MongoDB management
@@ -280,8 +280,8 @@ kubectl apply -f k8s/ingress.yaml -n autosec
 # Update system
 sudo apt update && sudo apt upgrade -y
 
-# Install Node.js 18
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js 20 (LTS)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
 # Install PostgreSQL

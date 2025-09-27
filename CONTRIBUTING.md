@@ -24,7 +24,7 @@ Thank you for your interest in contributing to AutoSec! This guide will help you
 Before contributing, ensure you have:
 - **Git**: Version control system
 - **Docker & Docker Compose**: For running the development environment
-- **Node.js 18+**: For backend development
+- **Node.js 18+**: For backend development (Node.js 20+ recommended)
 - **npm or yarn**: Package manager
 - **Code Editor**: VS Code, IntelliJ, or your preferred editor
 
