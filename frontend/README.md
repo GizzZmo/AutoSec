@@ -25,13 +25,19 @@ This is the frontend application for the AutoSec cybersecurity operations consol
 
 ## Environment Variables
 
+Copy `.env.example` to `.env` and configure:
+
 - `REACT_APP_API_BASE_URL` - Backend API base URL (default: http://localhost:8080/api)
+- `REACT_APP_DEBUG` - Enable debug mode (default: false)
+- `REACT_APP_TITLE` - Application title override (default: AutoSec)
+- `REACT_APP_ENABLE_DEV_TOOLS` - Enable development tools (default: true)
 
 ## Running Locally
 
 1. Install dependencies: `npm install`
-2. Start the development server: `npm start`
-3. Open http://localhost:3000 in your browser
+2. Copy and configure environment: `cp .env.example .env`
+3. Start the development server: `npm start`
+4. Open http://localhost:3000 in your browser
 
 ## Docker
 

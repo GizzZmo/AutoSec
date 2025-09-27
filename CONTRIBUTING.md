@@ -441,9 +441,9 @@ We value all contributions and provide recognition through:
 ## 📚 Additional Resources
 
 ### Learning Resources
-- **Architecture Guide**: [docs/developer-guide/architecture.md](../developer-guide/architecture.md)
-- **API Documentation**: [docs/api/endpoints.md](../api/endpoints.md)
-- **Security Guide**: [docs/security/architecture.md](../security/architecture.md)
+- **Architecture Guide**: [docs/developer-guide/architecture.md](docs/developer-guide/architecture.md)
+- **API Documentation**: [docs/api/endpoints.md](docs/api/endpoints.md)
+- **Security Guide**: [docs/security/architecture.md](docs/security/architecture.md)
 
 ### Communication Channels
 - **GitHub Discussions**: General questions and ideas

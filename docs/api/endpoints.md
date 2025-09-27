@@ -539,4 +539,4 @@ const rule = await client.rules.create({
 
 ---
 
-For more examples and detailed integration guides, see the [Developer Documentation](../developer-guide/api-integration.md).
+For more examples and detailed integration guides, see the [Architecture Overview](../developer-guide/architecture.md) and [Main README](../../README.md).
