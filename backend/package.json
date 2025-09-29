@@ -38,7 +38,7 @@
     "ml-matrix": "^6.12.1",
     "mongoose": "^8.4.1",
     "mongoose-paginate-v2": "^1.8.0",
-    "multer": "^1.4.5-lts.1",
+    "multer": "^2.0.2",
     "natural": "^8.1.0",
     "node-cache": "^5.1.2",
     "node-cron": "^3.0.2",
