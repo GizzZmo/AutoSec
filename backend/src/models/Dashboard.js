@@ -194,7 +194,7 @@ dashboardSchema.methods.toSafeObject = function() {
 
 // Static methods
 dashboardSchema.statics.findByUser = function(userId, options = {}) {
-  const query = { userId };
+  let query = { userId };
   
   if (options.includePublic) {
     query = { $or: [{ userId }, { isPublic: true }] };

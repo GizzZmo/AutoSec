@@ -267,7 +267,7 @@ class DLPService {
     const obfuscationFindings = [];
 
     // Check for Base64 encoded content
-    const base64Pattern = /[A-Za-z0-9+\/]{20,}={0,2}/g;
+    const base64Pattern = /[A-Za-z0-9+/]{20,}={0,2}/g;
     const base64Matches = content.match(base64Pattern);
     
     if (base64Matches && base64Matches.length > 0) {
