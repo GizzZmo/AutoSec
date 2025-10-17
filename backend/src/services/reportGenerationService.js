@@ -503,7 +503,6 @@ class ReportGenerationService {
   }
 
   // Placeholder methods for other data collectors and content generators
-  async collectExecutiveDashboardData(parameters) { return { kpis: {}, totalDataPoints: 0 }; }
   async collectComplianceAuditData(parameters) { return { compliance: {}, totalDataPoints: 0 }; }
   async collectThreatIntelligenceData(parameters) { return { intelligence: [], totalDataPoints: 0 }; }
   async collectIncidentResponseData(parameters) { return { incidents: [], totalDataPoints: 0 }; }
