@@ -24,6 +24,7 @@ const authRoutes = require('./auth');
 const userRoutes = require('./users');
 const behaviorRoutes = require('./behavior');
 const mfaRoutes = require('./mfa');
+const threatHuntingRoutes = require('./threatHunting');
 
 // Swagger configuration
 const swaggerOptions = {
@@ -71,6 +72,7 @@ router.use('/auth', generalRateLimit, authRoutes);
 router.use('/users', generalRateLimit, userRoutes);
 router.use('/behavior', generalRateLimit, behaviorRoutes);
 router.use('/mfa', generalRateLimit, mfaRoutes);
+router.use('/threat-hunting', generalRateLimit, threatHuntingRoutes);
 
 /**
  * @swagger
