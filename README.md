@@ -1,5 +1,10 @@
 # AutoSec: Advanced Cybersecurity Operations Platform
 
+[![CI/CD Pipeline](https://github.com/GizzZmo/AutoSec/actions/workflows/ci.yml/badge.svg)](https://github.com/GizzZmo/AutoSec/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white)](https://www.docker.com/)
+
 AutoSec is a comprehensive, enterprise-grade cybersecurity platform designed for proactive network defense, advanced threat detection, behavioral analysis, and automated incident response. Built with modern microservices architecture, AutoSec provides real-time security monitoring, dynamic enforcement, and AI-powered threat intelligence.
 
 ## 🌟 Key Features
@@ -186,7 +191,7 @@ AutoSec follows a modern, cloud-native microservices architecture designed for s
 
 #### Incident Response
 - **Automated Playbooks** - Response workflow automation
-- **Threat Hunting** - Proactive threat investigation
+- **Threat Hunting** - Proactive threat investigation with pre-built templates
 - **Forensic Analysis** - Detailed incident reconstruction
 - **Compliance Reporting** - Automated audit and compliance
 
@@ -245,7 +250,7 @@ AutoSec follows a modern, cloud-native microservices architecture designed for s
 - [x] External threat feed integration (MISP, STIX/TAXII)
 - [x] IOC (Indicators of Compromise) management
 - [x] Automated threat correlation and intelligence
-- [ ] Advanced threat hunting capabilities
+- [x] Advanced threat hunting capabilities
 
 #### Incident Response & Automation
 - [x] Automated response playbooks and workflows
@@ -525,6 +530,16 @@ GET    /api/behavior/network     # Get network behavior metrics
 POST   /api/behavior/analyze     # Trigger behavior analysis
 GET    /api/behavior/anomalies   # Get detected anomalies
 GET    /api/behavior/risk-score  # Get current risk scores
+
+# Threat hunting
+POST   /api/threat-hunting/start        # Start new threat hunting campaign
+GET    /api/threat-hunting              # Get all threat hunts
+GET    /api/threat-hunting/active       # Get active threat hunts
+GET    /api/threat-hunting/stats        # Get threat hunting statistics
+GET    /api/threat-hunting/templates    # Get available hunt templates
+GET    /api/threat-hunting/:huntId      # Get specific threat hunt
+POST   /api/threat-hunting/:huntId/stop # Stop a running hunt
+DELETE /api/threat-hunting/:huntId      # Delete a threat hunt
 ```
 
 ### Log Management & Analytics
@@ -673,6 +688,57 @@ const networkAnalysis = await mlService.analyzeNetworkBehavior({
   connectionMetrics: [...],
   protocolDistribution: [...]
 });
+```
+
+### Threat Hunting Integration
+
+```javascript
+const { threatHuntingService } = require('./services/threatHuntingService');
+
+// Start a threat hunt using a pre-built template
+const hunt = await threatHuntingService.startThreatHunt({
+  name: 'APT Detection Hunt',
+  description: 'Hunting for Advanced Persistent Threat indicators',
+  template: 'apt-detection', // Use pre-built template
+  timeRange: '7d', // Search last 7 days
+  priority: 'high',
+  userId: 'admin-user-id'
+});
+
+// Start a custom threat hunt
+const customHunt = await threatHuntingService.startThreatHunt({
+  name: 'Custom Data Exfiltration Hunt',
+  description: 'Looking for unusual data transfers',
+  hypothesis: 'Insider threat performing data exfiltration via cloud storage',
+  queries: [
+    {
+      name: 'Large uploads to external domains',
+      type: 'network',
+      pattern: 'bytes_out > 100MB AND destination NOT internal',
+      timeWindow: '24h'
+    },
+    {
+      name: 'After-hours file access',
+      type: 'behavior',
+      pattern: 'login_time NOT IN working_hours AND file_access_count > 50',
+      timeWindow: '12h'
+    }
+  ],
+  timeRange: '24h',
+  priority: 'critical',
+  userId: 'admin-user-id'
+});
+
+// Get hunt status and findings
+const huntResults = await threatHuntingService.getThreatHunt(hunt._id);
+console.log(`Hunt status: ${huntResults.status}`);
+console.log(`Findings: ${huntResults.summary?.totalFindings || 0}`);
+
+// Get threat hunting statistics
+const stats = await threatHuntingService.getThreatHuntingStats();
+console.log(`Total hunts: ${stats.totalHunts}`);
+console.log(`Active hunts: ${stats.activeHunts}`);
+console.log(`Available templates: ${stats.availableTemplates.join(', ')}`);
 ```
 
 ## 🤝 Contributing
