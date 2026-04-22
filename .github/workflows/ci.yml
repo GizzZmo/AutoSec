@@ -43,6 +43,14 @@ jobs:
       with:
         file: ./backend/coverage/lcov.info
         flags: backend
+
+    - name: Upload backend coverage artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: backend-coverage
+        path: backend/coverage/
+        retention-days: 30
         
   # Frontend testing and linting  
   frontend:
@@ -81,6 +89,21 @@ jobs:
       with:
         file: ./frontend/coverage/lcov.info
         flags: frontend
+
+    - name: Upload frontend build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-build
+        path: frontend/build/
+        retention-days: 30
+
+    - name: Upload frontend coverage artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: frontend-coverage
+        path: frontend/coverage/
+        retention-days: 30
 
   # Docker build validation
   docker:
@@ -142,3 +165,11 @@ jobs:
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: trivy-security-scan
+        path: trivy-results.sarif
+        retention-days: 90

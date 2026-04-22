@@ -7,6 +7,17 @@
 
 AutoSec is a comprehensive, enterprise-grade cybersecurity platform designed for proactive network defense, advanced threat detection, behavioral analysis, and automated incident response. Built with modern microservices architecture, AutoSec provides real-time security monitoring, dynamic enforcement, and AI-powered threat intelligence.
 
+## 📸 Screenshots
+
+### Dashboard — System Overview
+![AutoSec Dashboard](docs/screenshots/dashboard.svg)
+
+### Blocklist — Dynamic IP Rule Management
+![AutoSec Blocklist](docs/screenshots/blocklist.svg)
+
+### Logs — Telemetry Log Viewer
+![AutoSec Logs](docs/screenshots/logs.svg)
+
 ## 🌟 Key Features
 
 ### Core Security Capabilities

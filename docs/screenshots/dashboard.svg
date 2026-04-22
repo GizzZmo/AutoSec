@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <style>
+      .bg { fill: #1a1a2e; }
+      .header-bg { fill: #0a0a1a; }
+      .sidebar-bg { fill: #0a0a1a; }
+      .card-bg { fill: #1a1a2e; }
+      .card-border { stroke: #00ffff; stroke-width: 1; fill: none; }
+      .text-cyan { fill: #00ffff; }
+      .text-green { fill: #00ff00; }
+      .text-red { fill: #ff0000; }
+      .text-yellow { fill: #ffcc00; }
+      .text-white { fill: #cccccc; }
+      .text-dim { fill: #888888; }
+      .mono { font-family: 'Courier New', monospace; }
+      .header-text { font-family: 'Courier New', monospace; font-size: 20px; fill: #00ffff; font-weight: bold; }
+      .sidebar-link { font-family: 'Courier New', monospace; font-size: 13px; fill: #00ff00; }
+      .sidebar-link-active { font-family: 'Courier New', monospace; font-size: 13px; fill: #00ffff; }
+      .card-title { font-family: 'Courier New', monospace; font-size: 14px; fill: #00ffff; font-weight: bold; }
+      .card-value-green { font-family: 'Courier New', monospace; font-size: 36px; fill: #00ff00; font-weight: bold; }
+      .card-value-cyan { font-family: 'Courier New', monospace; font-size: 36px; fill: #00ffff; font-weight: bold; }
+      .card-value-red { font-family: 'Courier New', monospace; font-size: 36px; fill: #ff0000; font-weight: bold; }
+      .card-value-yellow { font-family: 'Courier New', monospace; font-size: 36px; fill: #ffcc00; font-weight: bold; }
+      .card-desc { font-family: 'Courier New', monospace; font-size: 11px; fill: #888888; }
+      .section-title { font-family: 'Courier New', monospace; font-size: 18px; fill: #00ff00; font-weight: bold; }
+      .page-title { font-family: 'Courier New', monospace; font-size: 22px; fill: #00ff00; font-weight: bold; }
+      .activity-time-green { font-family: 'Courier New', monospace; font-size: 12px; fill: #00ff00; }
+      .activity-time-cyan { font-family: 'Courier New', monospace; font-size: 12px; fill: #00ffff; }
+      .activity-time-red { font-family: 'Courier New', monospace; font-size: 12px; fill: #ff0000; }
+      .activity-text { font-family: 'Courier New', monospace; font-size: 12px; fill: #cccccc; }
+      .divider { stroke: #00ffff; stroke-width: 0.5; stroke-dasharray: 4 4; }
+      .border-green { stroke: #00ff00; stroke-width: 1; fill: none; }
+      .border-cyan { stroke: #00ffff; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <!-- Main background -->
+  <rect width="1280" height="720" class="bg"/>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="1280" height="55" class="header-bg"/>
+  <line x1="0" y1="55" x2="1280" y2="55" stroke="#00ffff" stroke-width="1"/>
+  <text x="640" y="35" text-anchor="middle" class="header-text">⚡ AutoSec — CyberSec Operations Console ⚡</text>
+  <text x="1220" y="35" text-anchor="end" font-family="'Courier New', monospace" font-size="12" fill="#00ff00">● LIVE</text>
+  <text x="60" y="35" text-anchor="middle" font-family="'Courier New', monospace" font-size="12" fill="#888888">v2.4.1</text>
+
+  <!-- Sidebar -->
+  <rect x="0" y="55" width="200" height="665" class="sidebar-bg"/>
+  <line x1="200" y1="55" x2="200" y2="720" stroke="#00ff00" stroke-width="1"/>
+
+  <!-- Sidebar nav items -->
+  <rect x="0" y="95" width="200" height="35" fill="#2a2a4a"/>
+  <line x1="0" y1="95" x2="200" y2="95" stroke="#00ffff" stroke-width="0.5"/>
+  <line x1="0" y1="130" x2="200" y2="130" stroke="#00ffff" stroke-width="0.5"/>
+  <text x="20" y="118" class="sidebar-link-active">▶ Dashboard</text>
+  <text x="20" y="160" class="sidebar-link">  Blocklist</text>
+  <text x="20" y="200" class="sidebar-link">  Logs</text>
+  <text x="20" y="240" class="sidebar-link">  Threat Intel</text>
+  <text x="20" y="280" class="sidebar-link">  Incidents</text>
+  <text x="20" y="320" class="sidebar-link">  Analytics</text>
+  <text x="20" y="360" class="sidebar-link">  Settings</text>
+
+  <!-- Main content area -->
+  <rect x="200" y="55" width="1080" height="665" fill="#0f0f1a"/>
+  <line x1="200" y1="55" x2="200" y2="720" stroke="#00ff00" stroke-width="1"/>
+
+  <!-- Page title -->
+  <text x="225" y="100" class="page-title">System Overview</text>
+  <text x="225" y="122" font-family="'Courier New', monospace" font-size="13" fill="#888888">Welcome to the AutoSec CyberSec Operations Console.</text>
+  <text x="225" y="140" font-family="'Courier New', monospace" font-size="13" fill="#888888">This dashboard provides a high-level overview of your network security posture.</text>
+
+  <!-- Stat Cards Row -->
+  <!-- Card 1: Active Blocklist Rules -->
+  <rect x="225" y="165" width="245" height="130" rx="5" class="card-border" fill="#1a1a2e"/>
+  <text x="245" y="192" class="card-title">Active Blocklist Rules</text>
+  <text x="245" y="240" class="card-value-green">150</text>
+  <text x="245" y="275" class="card-desc">Currently active rules protecting your perimeter.</text>
+
+  <!-- Card 2: Logs Ingested -->
+  <rect x="490" y="165" width="245" height="130" rx="5" class="card-border" fill="#1a1a2e"/>
+  <text x="510" y="192" class="card-title">Logs Ingested (24h)</text>
+  <text x="510" y="240" class="card-value-cyan">1,234,567</text>
+  <text x="510" y="275" class="card-desc">Total telemetry events processed in last 24 hours.</text>
+
+  <!-- Card 3: Critical Alerts -->
+  <rect x="755" y="165" width="245" height="130" rx="5" class="card-border" fill="#1a1a2e"/>
+  <text x="775" y="192" class="card-title">Critical Alerts (7d)</text>
+  <text x="775" y="240" class="card-value-red">5</text>
+  <text x="775" y="275" class="card-desc">High-severity incidents requiring attention.</text>
+
+  <!-- Card 4: Blocked Attempts -->
+  <rect x="1020" y="165" width="240" height="130" rx="5" class="card-border" fill="#1a1a2e"/>
+  <text x="1040" y="192" class="card-title">Blocked Attempts (24h)</text>
+  <text x="1040" y="240" class="card-value-yellow">87,654</text>
+  <text x="1040" y="275" class="card-desc">Connections denied by AutoSec rules.</text>
+
+  <!-- Recent Activity Feed -->
+  <text x="225" y="335" class="section-title">Recent Activity Feed</text>
+
+  <!-- Activity items -->
+  <line x1="225" y1="350" x2="1255" y2="350" class="divider"/>
+  <text x="225" y="375" class="activity-time-green">[2025-07-23 16:05]</text>
+  <text x="420" y="375" class="activity-text">New IP_SINGLE rule added: 1.2.3.4 (Manual)</text>
+  <line x1="225" y1="390" x2="1255" y2="390" class="divider"/>
+
+  <text x="225" y="415" class="activity-time-cyan">[2025-07-23 15:50]</text>
+  <text x="420" y="415" class="activity-text">Log ingestion spike detected (120% above baseline)</text>
+  <line x1="225" y1="430" x2="1255" y2="430" class="divider"/>
+
+  <text x="225" y="455" class="activity-time-red">[2025-07-23 15:30]</text>
+  <text x="420" y="455" class="activity-text">Critical: Brute-force attempt detected from 203.0.113.10</text>
+  <line x1="225" y1="470" x2="1255" y2="470" class="divider"/>
+
+  <text x="225" y="495" class="activity-time-green">[2025-07-23 15:00]</text>
+  <text x="420" y="495" class="activity-text">Country block for 'KP' updated (Threat Feed)</text>
+  <line x1="225" y1="510" x2="1255" y2="510" class="divider"/>
+
+  <!-- Status bar -->
+  <rect x="0" y="695" width="1280" height="25" fill="#0a0a1a"/>
+  <line x1="0" y1="695" x2="1280" y2="695" stroke="#00ffff" stroke-width="0.5"/>
+  <text x="15" y="712" font-family="'Courier New', monospace" font-size="11" fill="#00ff00">● SYSTEM HEALTHY</text>
+  <text x="200" y="712" font-family="'Courier New', monospace" font-size="11" fill="#888888">|  PostgreSQL: ●  MongoDB: ●  Redis: ●  RabbitMQ: ●</text>
+  <text x="1200" y="712" text-anchor="end" font-family="'Courier New', monospace" font-size="11" fill="#888888">2025-07-23 16:10:42 UTC</text>
+</svg>

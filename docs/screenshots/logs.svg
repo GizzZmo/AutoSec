@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <style>
+      .mono { font-family: 'Courier New', monospace; }
+    </style>
+  </defs>
+
+  <!-- Main background -->
+  <rect width="1280" height="720" fill="#0f0f1a"/>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="1280" height="55" fill="#0a0a1a"/>
+  <line x1="0" y1="55" x2="1280" y2="55" stroke="#00ffff" stroke-width="1"/>
+  <text x="640" y="35" text-anchor="middle" font-family="'Courier New', monospace" font-size="20" fill="#00ffff" font-weight="bold">⚡ AutoSec — CyberSec Operations Console ⚡</text>
+  <text x="1220" y="35" text-anchor="end" font-family="'Courier New', monospace" font-size="12" fill="#00ff00">● LIVE</text>
+
+  <!-- Sidebar -->
+  <rect x="0" y="55" width="200" height="665" fill="#0a0a1a"/>
+  <line x1="200" y1="55" x2="200" y2="720" stroke="#00ff00" stroke-width="1"/>
+  <text x="20" y="118" font-family="'Courier New', monospace" font-size="13" fill="#00ff00">  Dashboard</text>
+  <text x="20" y="158" font-family="'Courier New', monospace" font-size="13" fill="#00ff00">  Blocklist</text>
+  <rect x="0" y="165" width="200" height="35" fill="#2a2a4a"/>
+  <line x1="0" y1="165" x2="200" y2="165" stroke="#00ffff" stroke-width="0.5"/>
+  <line x1="0" y1="200" x2="200" y2="200" stroke="#00ffff" stroke-width="0.5"/>
+  <text x="20" y="188" font-family="'Courier New', monospace" font-size="13" fill="#00ffff">▶ Logs</text>
+  <text x="20" y="240" font-family="'Courier New', monospace" font-size="13" fill="#00ff00">  Threat Intel</text>
+  <text x="20" y="280" font-family="'Courier New', monospace" font-size="13" fill="#00ff00">  Incidents</text>
+
+  <!-- Page title -->
+  <text x="225" y="100" font-family="'Courier New', monospace" font-size="22" fill="#00ff00" font-weight="bold">Telemetry Logs</text>
+
+  <!-- Filter Form -->
+  <rect x="225" y="115" width="1030" height="115" rx="5" stroke="#00ffff" stroke-width="1" fill="#1a1a2e"/>
+
+  <!-- Level filter -->
+  <text x="245" y="142" font-family="'Courier New', monospace" font-size="12" fill="#00ffff">Level:</text>
+  <rect x="245" y="150" width="120" height="26" rx="3" stroke="#00ffff" stroke-width="1" fill="#2a2a4a"/>
+  <text x="255" y="167" font-family="'Courier New', monospace" font-size="11" fill="#00ff00">All ▾</text>
+
+  <!-- Source filter -->
+  <text x="385" y="142" font-family="'Courier New', monospace" font-size="12" fill="#00ffff">Source:</text>
+  <rect x="385" y="150" width="150" height="26" rx="3" stroke="#00ffff" stroke-width="1" fill="#2a2a4a"/>
+  <text x="395" y="167" font-family="'Courier New', monospace" font-size="11" fill="#888888">e.g., firewall</text>
+
+  <!-- Event Type filter -->
+  <text x="550" y="142" font-family="'Courier New', monospace" font-size="12" fill="#00ffff">Event Type:</text>
+  <rect x="550" y="150" width="175" height="26" rx="3" stroke="#00ffff" stroke-width="1" fill="#2a2a4a"/>
+  <text x="560" y="167" font-family="'Courier New', monospace" font-size="11" fill="#888888">e.g., login_failure</text>
+
+  <!-- IP filter -->
+  <text x="742" y="142" font-family="'Courier New', monospace" font-size="12" fill="#00ffff">IP Address:</text>
+  <rect x="742" y="150" width="150" height="26" rx="3" stroke="#00ffff" stroke-width="1" fill="#2a2a4a"/>
+  <text x="752" y="167" font-family="'Courier New', monospace" font-size="11" fill="#888888">e.g., 192.168.1.1</text>
+
+  <!-- Search filter -->
+  <text x="245" y="198" font-family="'Courier New', monospace" font-size="12" fill="#00ffff">Search (Message/Metadata):</text>
+  <rect x="245" y="205" width="550" height="18" rx="3" stroke="#00ffff" stroke-width="1" fill="#2a2a4a"/>
+  <text x="255" y="218" font-family="'Courier New', monospace" font-size="11" fill="#888888">Search keywords...</text>
+
+  <!-- Apply Filters button -->
+  <rect x="920" y="195" width="120" height="28" rx="3" fill="#00ffff"/>
+  <text x="980" y="213" text-anchor="middle" font-family="'Courier New', monospace" font-size="12" fill="#1a1a2e" font-weight="bold">Apply Filters</text>
+
+  <!-- Logs Table -->
+  <!-- Header -->
+  <rect x="225" y="245" width="1030" height="28" fill="#2a2a4a"/>
+  <line x1="225" y1="245" x2="1255" y2="245" stroke="#00ffff" stroke-width="1"/>
+  <line x1="225" y1="273" x2="1255" y2="273" stroke="#00ffff" stroke-width="1"/>
+  <line x1="225" y1="245" x2="225" y2="580" stroke="#00ffff" stroke-width="1"/>
+  <line x1="1255" y1="245" x2="1255" y2="580" stroke="#00ffff" stroke-width="1"/>
+
+  <text x="230" y="263" font-family="'Courier New', monospace" font-size="11" fill="#00ffff">Timestamp</text>
+  <text x="340" y="263" font-family="'Courier New', monospace" font-size="11" fill="#00ffff">Level</text>
+  <text x="395" y="263" font-family="'Courier New', monospace" font-size="11" fill="#00ffff">Source</text>
+  <text x="475" y="263" font-family="'Courier New', monospace" font-size="11" fill="#00ffff">Event Type</text>
+  <text x="590" y="263" font-family="'Courier New', monospace" font-size="11" fill="#00ffff">Message</text>
+  <text x="820" y="263" font-family="'Courier New', monospace" font-size="11" fill="#00ffff">IP Address</text>
+  <text x="920" y="263" font-family="'Courier New', monospace" font-size="11" fill="#00ffff">Country</text>
+  <text x="990" y="263" font-family="'Courier New', monospace" font-size="11" fill="#00ffff">Organization</text>
+  <text x="1130" y="263" font-family="'Courier New', monospace" font-size="11" fill="#00ffff">User/Device</text>
+
+  <!-- Column dividers -->
+  <line x1="330" y1="245" x2="330" y2="580" stroke="#00ffff" stroke-width="0.5"/>
+  <line x1="385" y1="245" x2="385" y2="580" stroke="#00ffff" stroke-width="0.5"/>
+  <line x1="465" y1="245" x2="465" y2="580" stroke="#00ffff" stroke-width="0.5"/>
+  <line x1="580" y1="245" x2="580" y2="580" stroke="#00ffff" stroke-width="0.5"/>
+  <line x1="810" y1="245" x2="810" y2="580" stroke="#00ffff" stroke-width="0.5"/>
+  <line x1="910" y1="245" x2="910" y2="580" stroke="#00ffff" stroke-width="0.5"/>
+  <line x1="980" y1="245" x2="980" y2="580" stroke="#00ffff" stroke-width="0.5"/>
+  <line x1="1120" y1="245" x2="1120" y2="580" stroke="#00ffff" stroke-width="0.5"/>
+
+  <!-- Row 1 - Critical -->
+  <rect x="225" y="273" width="1030" height="32" fill="#1a1a2e"/>
+  <line x1="225" y1="305" x2="1255" y2="305" stroke="#00ffff" stroke-width="0.3"/>
+  <text x="230" y="293" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">2025-07-23 16:05:12</text>
+  <text x="340" y="293" font-family="'Courier New', monospace" font-size="11" fill="#ff0000">critical</text>
+  <text x="395" y="293" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">firewall</text>
+  <text x="475" y="293" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">brute_force</text>
+  <text x="590" y="293" font-family="'Courier New', monospace" font-size="10" fill="#cccccc">15 failed SSH logins from 203.0.113.10</text>
+  <text x="820" y="293" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">203.0.113.10</text>
+  <text x="920" y="293" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">RU</text>
+  <text x="990" y="293" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">AS31337</text>
+  <text x="1130" y="293" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">N/A</text>
+
+  <!-- Row 2 - Warn -->
+  <rect x="225" y="305" width="1030" height="32" fill="#2a2a4a"/>
+  <line x1="225" y1="337" x2="1255" y2="337" stroke="#00ffff" stroke-width="0.3"/>
+  <text x="230" y="325" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">2025-07-23 16:04:44</text>
+  <text x="340" y="325" font-family="'Courier New', monospace" font-size="11" fill="#ffcc00">warn</text>
+  <text x="395" y="325" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">application</text>
+  <text x="475" y="325" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">auth_failure</text>
+  <text x="590" y="325" font-family="'Courier New', monospace" font-size="10" fill="#cccccc">Invalid credentials for user admin@corp.local</text>
+  <text x="820" y="325" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">192.168.5.22</text>
+  <text x="920" y="325" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">US</text>
+  <text x="990" y="325" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">CORPNET</text>
+  <text x="1130" y="325" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">admin</text>
+
+  <!-- Row 3 - Info -->
+  <rect x="225" y="337" width="1030" height="32" fill="#1a1a2e"/>
+  <line x1="225" y1="369" x2="1255" y2="369" stroke="#00ffff" stroke-width="0.3"/>
+  <text x="230" y="357" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">2025-07-23 16:04:01</text>
+  <text x="340" y="357" font-family="'Courier New', monospace" font-size="11" fill="#00ff00">info</text>
+  <text x="395" y="357" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">network</text>
+  <text x="475" y="357" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">conn_attempt</text>
+  <text x="590" y="357" font-family="'Courier New', monospace" font-size="10" fill="#cccccc">TCP SYN to port 443 from 8.8.8.8</text>
+  <text x="820" y="357" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">8.8.8.8</text>
+  <text x="920" y="357" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">US</text>
+  <text x="990" y="357" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">Google LLC</text>
+  <text x="1130" y="357" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">N/A</text>
+
+  <!-- Row 4 - Error -->
+  <rect x="225" y="369" width="1030" height="32" fill="#2a2a4a"/>
+  <line x1="225" y1="401" x2="1255" y2="401" stroke="#00ffff" stroke-width="0.3"/>
+  <text x="230" y="389" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">2025-07-23 16:03:55</text>
+  <text x="340" y="389" font-family="'Courier New', monospace" font-size="11" fill="#ff0000">error</text>
+  <text x="395" y="389" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">database</text>
+  <text x="475" y="389" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">query_timeout</text>
+  <text x="590" y="389" font-family="'Courier New', monospace" font-size="10" fill="#cccccc">Query exceeded 30s threshold on logs collection</text>
+  <text x="820" y="389" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">N/A</text>
+  <text x="920" y="389" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">N/A</text>
+  <text x="990" y="389" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">N/A</text>
+  <text x="1130" y="389" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">svc-db-01</text>
+
+  <!-- Row 5 - Info -->
+  <rect x="225" y="401" width="1030" height="32" fill="#1a1a2e"/>
+  <line x1="225" y1="433" x2="1255" y2="433" stroke="#00ffff" stroke-width="0.3"/>
+  <text x="230" y="421" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">2025-07-23 16:03:20</text>
+  <text x="340" y="421" font-family="'Courier New', monospace" font-size="11" fill="#00ff00">info</text>
+  <text x="395" y="421" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">firewall</text>
+  <text x="475" y="421" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">rule_matched</text>
+  <text x="590" y="421" font-family="'Courier New', monospace" font-size="10" fill="#cccccc">Blocked traffic from KP (Country Block active)</text>
+  <text x="820" y="421" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">175.45.176.1</text>
+  <text x="920" y="421" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">KP</text>
+  <text x="990" y="421" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">N/A</text>
+  <text x="1130" y="421" font-family="'Courier New', monospace" font-size="11" fill="#cccccc">N/A</text>
+
+  <line x1="225" y1="433" x2="1255" y2="433" stroke="#00ffff" stroke-width="1"/>
+
+  <!-- Pagination -->
+  <rect x="525" y="445" width="80" height="28" rx="3" stroke="#00ffff" stroke-width="1" fill="#2a2a4a"/>
+  <text x="565" y="463" text-anchor="middle" font-family="'Courier New', monospace" font-size="12" fill="#00ffff">Previous</text>
+  <text x="620" y="463" font-family="'Courier New', monospace" font-size="12" fill="#cccccc">  Page 1 of 62 (1,234,567 total logs)  </text>
+  <rect x="900" y="445" width="50" height="28" rx="3" stroke="#00ffff" stroke-width="1" fill="#2a2a4a"/>
+  <text x="925" y="463" text-anchor="middle" font-family="'Courier New', monospace" font-size="12" fill="#00ffff">Next</text>
+
+  <!-- Status bar -->
+  <rect x="0" y="695" width="1280" height="25" fill="#0a0a1a"/>
+  <line x1="0" y1="695" x2="1280" y2="695" stroke="#00ffff" stroke-width="0.5"/>
+  <text x="15" y="712" font-family="'Courier New', monospace" font-size="11" fill="#00ff00">● SYSTEM HEALTHY</text>
+  <text x="200" y="712" font-family="'Courier New', monospace" font-size="11" fill="#888888">|  PostgreSQL: ●  MongoDB: ●  Redis: ●  RabbitMQ: ●</text>
+  <text x="1200" y="712" text-anchor="end" font-family="'Courier New', monospace" font-size="11" fill="#888888">2025-07-23 16:10:42 UTC</text>
+</svg>
