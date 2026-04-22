@@ -1,0 +1,30 @@
+{
+  "short_name": "AutoSec",
+  "name": "AutoSec CyberSec Operations Console",
+  "description": "Enterprise-grade cybersecurity operations platform for proactive threat detection and automated incident response.",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0a0a1a",
+  "background_color": "#1a1a2e",
+  "orientation": "landscape",
+  "categories": ["security", "utilities", "productivity"]
+}
