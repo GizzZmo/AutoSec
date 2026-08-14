@@ -1,13 +1,20 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
+const { Op } = require('sequelize');
 const User = require('../models/User');
 const logger = require('../config/logger');
 
 // JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+
+// Fail fast if JWT_SECRET is missing or is the insecure placeholder
+if (!JWT_SECRET || JWT_SECRET === 'your-secret-key-change-in-production' || JWT_SECRET.length < 32) {
+  logger.error('FATAL: JWT_SECRET is missing, too short (<32 chars), or is the default placeholder. Refusing to start.');
+  process.exit(1);
+}
 
 // Generate JWT token
 const generateTokens = (userId) => {
@@ -30,12 +37,16 @@ exports.register = async (req, res) => {
       });
     }
 
-    const { username, email, password, firstName, lastName, role } = req.body;
+    const { username, email, password, firstName, lastName } = req.body;
+    // SECURITY: role is NEVER accepted from user input on registration.
+    // New users always get 'viewer'. Admin must be assigned post-creation
+    // via user management endpoints (require admin auth).
+    const role = 'viewer';
 
     // Check if user already exists
     const existingUser = await User.findOne({
       where: {
-        $or: [{ email }, { username }],
+        [Op.or]: [{ email: email }, { username: username }],
       },
     });
 
@@ -101,7 +112,7 @@ exports.login = async (req, res) => {
     // Find user by email or username
     const user = await User.findOne({
       where: {
-        $or: [{ email: identifier }, { username: identifier }],
+        [Op.or]: [{ email: identifier }, { username: identifier }],
       },
     });
 

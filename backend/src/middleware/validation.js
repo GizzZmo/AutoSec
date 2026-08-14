@@ -30,11 +30,6 @@ exports.validateRegistration = [
     .trim()
     .isLength({ min: 1, max: 50 })
     .withMessage('Last name is required and must be less than 50 characters'),
-  
-  body('role')
-    .optional()
-    .isIn(['admin', 'analyst', 'operator', 'viewer'])
-    .withMessage('Role must be one of: admin, analyst, operator, viewer'),
 ];
 
 // User login validation

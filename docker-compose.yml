@@ -1,19 +1,26 @@
+# AutoSec Docker Compose — Production-Ready Configuration
+# Copy .env.example to .env and fill in secrets before running.
+#
+# Required env vars (set in .env or export before `docker compose up`):
+#   POSTGRES_PASSWORD, MONGO_URI, JWT_SECRET, REDIS_PASSWORD, RABBITMQ_DEFAULT_PASS
+
 services:
   # PostgreSQL Database Service
   autosec-postgres:
     image: postgres:15-alpine
     restart: always
     environment:
-      POSTGRES_DB: autosec_db
-      POSTGRES_USER: autosec_user
-      POSTGRES_PASSWORD: autosec_password
+      POSTGRES_DB: ${POSTGRES_DB:-autosec_db}
+      POSTGRES_USER: ${POSTGRES_USER:-autosec_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    # Only expose port in dev; comment out for production
     ports:
-      - "5432:5432" # Expose for local DB tools if needed
+      - "${PG_EXPOSE_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U autosec_user -d autosec_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-autosec_user} -d ${POSTGRES_DB:-autosec_db}"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -24,8 +31,9 @@ services:
     restart: always
     volumes:
       - mongodb_data:/data/db
+    # Only expose port in dev; comment out for production
     ports:
-      - "27017:27017" # Expose for local DB tools if needed
+      - "${MONGO_EXPOSE_PORT:-27017}:27017"
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
       interval: 30s
@@ -36,13 +44,14 @@ services:
   autosec-redis:
     image: redis:7-alpine
     restart: always
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-autosec_redis_secret}
     volumes:
       - redis_data:/data
+    # Only expose port in dev; comment out for production
     ports:
-      - "6379:6379"
+      - "${REDIS_EXPOSE_PORT:-6379}:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-autosec_redis_secret}", "ping"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -52,13 +61,13 @@ services:
     image: rabbitmq:3-management-alpine
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-autosec}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:?Set RABBITMQ_DEFAULT_PASS in .env}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     ports:
-      - "5672:5672" # AMQP protocol port
-      - "15672:15672" # Management UI port
+      - "${RABBIT_AMQP_PORT:-5672}:5672"
+      - "${RABBIT_MGMT_PORT:-15672}:15672"
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 30s
@@ -70,42 +79,42 @@ services:
     build: ./backend
     restart: always
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
+      NODE_ENV: ${NODE_ENV:-production}
       PORT: 8080
       API_VERSION: 1.0.0
-      
-      # Security
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
-      JWT_EXPIRES_IN: 24h
-      JWT_REFRESH_EXPIRES_IN: 7d
-      
+
+      # Security — MUST be set externally
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (min 32 chars)}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+
       # Logging
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      
+
       # Database connections
       PG_HOST: autosec-postgres
       PG_PORT: 5432
-      PG_USER: autosec_user
-      PG_PASSWORD: autosec_password
-      PG_DATABASE: autosec_db
+      PG_USER: ${POSTGRES_USER:-autosec_user}
+      PG_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      PG_DATABASE: ${POSTGRES_DB:-autosec_db}
       MONGO_URI: mongodb://autosec-mongodb:27017/autosec_logs
-      REDIS_URL: redis://autosec-redis:6379
-      
+      REDIS_URL: redis://:${REDIS_PASSWORD:-autosec_redis_secret}@autosec-redis:6379
+
       # Message queue
-      RABBITMQ_URL: amqp://guest:guest@autosec-rabbitmq:5672
-      
+      RABBITMQ_URL: amqp://${RABBITMQ_DEFAULT_USER:-autosec}:${RABBITMQ_DEFAULT_PASS:?Set RABBITMQ_DEFAULT_PASS}@autosec-rabbitmq:5672
+
       # GeoIP
       GEOIP_DB_PATH: /app/data/geoip/GeoLite2-City.mmdb
-      
+
       # Frontend URL for CORS
-      FRONTEND_URL: http://localhost:3000
-      
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+
     volumes:
       - ./data/geoip:/app/data/geoip:ro # Mount GeoIP data read-only
-      - ./backend/logs:/app/logs # Mount logs directory
-      - ./backend/uploads:/app/uploads # Mount uploads directory
+      - backend_logs:/app/logs
+      - backend_uploads:/app/uploads
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
     depends_on:
       autosec-postgres:
         condition: service_healthy
@@ -116,7 +125,7 @@ services:
       autosec-rabbitmq:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -129,7 +138,7 @@ services:
       REACT_APP_API_BASE_URL: http://localhost:8080/api
       REACT_APP_VERSION: 1.0.0
     ports:
-      - "3000:80" # Nginx serves React build on port 80 inside container
+      - "${FRONTEND_PORT:-3000}:80" # Nginx serves React build on port 80 inside container
     depends_on:
       autosec-backend:
         condition: service_healthy
@@ -144,3 +153,5 @@ volumes:
   mongodb_data:
   redis_data:
   rabbitmq_data:
+  backend_logs:
+  backend_uploads:

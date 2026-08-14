@@ -1,8 +1,7 @@
 require('dotenv').config();
 const app = require('./app');
-const { sequelize } = require('./config/db');
-const { connectMongoDB } = require('./config/db');
-const { connectRabbitMQ, consumeMessages } = require('./config/rabbitmq');
+const { sequelize, connectMongoDB } = require('./config/db');
+const { connectRabbitMQ, consumeMessages, closeRabbitMQ } = require('./config/rabbitmq');
 const rabbitmqConsumer = require('./services/rabbitmqConsumer');
 const ScheduledAnalysisService = require('./services/scheduledAnalysis');
 const logger = require('./config/logger');
@@ -41,8 +40,11 @@ async function startServer() {
       logger.info(`API Documentation available at http://localhost:${PORT}/api/docs`);
     });
 
-    // Graceful shutdown handlers
+    // Graceful shutdown handler — closes all connections before exiting
+    let shuttingDown = false;
     const gracefulShutdown = async (signal) => {
+      if (shuttingDown) return;
+      shuttingDown = true;
       logger.info(`${signal} received, starting graceful shutdown`);
       
       // Stop accepting new connections
@@ -55,14 +57,40 @@ async function startServer() {
       logger.info('Scheduled analysis service stopped');
 
       // Close database connections
+      const shutdownErrors = [];
+
+      try {
+        await closeRabbitMQ();
+      } catch (error) {
+        shutdownErrors.push(`RabbitMQ: ${error.message}`);
+      }
+
       try {
         await sequelize.close();
         logger.info('PostgreSQL connection closed');
       } catch (error) {
-        logger.error('Error closing PostgreSQL connection:', error);
+        shutdownErrors.push(`PostgreSQL: ${error.message}`);
       }
 
-      // Exit process
+      // Close MongoDB connection
+      try {
+        const mongoose = require('mongoose');
+        await mongoose.connection.close();
+        logger.info('MongoDB connection closed');
+      } catch (error) {
+        shutdownErrors.push(`MongoDB: ${error.message}`);
+      }
+
+      if (shutdownErrors.length > 0) {
+        logger.error('Errors during shutdown:', { errors: shutdownErrors });
+      }
+
+      // Force exit after 10s if connections hang
+      setTimeout(() => {
+        logger.warn('Forced exit after timeout');
+        process.exit(0);
+      }, 10000).unref();
+
       process.exit(0);
     };
 

@@ -1,9 +1,10 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const rbacService = require('../services/rbacService');
 const logger = require('../config/logger');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Authentication middleware
 exports.authenticate = async (req, res, next) => {
@@ -341,7 +342,5 @@ exports.canManageUser = (req, res, next) => {
       });
     });
 };
-
-module.exports = exports;
 
 module.exports = exports;

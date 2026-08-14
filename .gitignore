@@ -1,62 +1,33 @@
 # Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+package-lock.json
+*.lock
 
-# Environment variables
+# Environment files
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.production
+*.env
 
-# Build outputs
-build/
-dist/
-*.tgz
-*.tar.gz
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# IDE and editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS generated files
+# OS files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Docker
-.dockerignore
+# IDE files
+.idea/
+.vscode/
+*.swp
 
-# GeoIP database (should be downloaded separately)
-data/geoip/GeoLite2-City.mmdb
+# Build output
+build/
+dist/
 
 # Logs
-logs
+logs/
 *.log
 
-# Database data (when using local development)
-postgres_data/
-mongodb_data/
+# GeoIP database (user must download)
+data/geoip/*.mmdb
 
-# Temporary files
-tmp/
-temp/
+# Docker volumes (local data)
+uploads/

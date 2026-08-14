@@ -200,19 +200,21 @@ exports.requestSizeLimit = (limit = '10mb') => {
 };
 
 // IP whitelist middleware (for admin endpoints)
+// NOTE: allowedIPs is cloned to avoid mutation leaking across requests
 exports.ipWhitelist = (allowedIPs = []) => {
+  const baseIPs = [...allowedIPs]; // capture once at registration time
   return (req, res, next) => {
     const clientIP = req.ip || req.connection.remoteAddress;
     
-    // Allow localhost in development
+    // Build final list per request (don't mutate baseIPs)
+    const effectiveIPs = [...baseIPs];
     if (process.env.NODE_ENV === 'development') {
-      allowedIPs.push('127.0.0.1', '::1', '::ffff:127.0.0.1');
+      effectiveIPs.push('127.0.0.1', '::1', '::ffff:127.0.0.1');
     }
 
-    if (allowedIPs.length > 0 && !allowedIPs.includes(clientIP)) {
+    if (effectiveIPs.length > 0 && !effectiveIPs.includes(clientIP)) {
       logger.warn('IP not in whitelist', {
         ip: clientIP,
-        allowedIPs,
         method: req.method,
         url: req.originalUrl,
       });
@@ -227,23 +229,36 @@ exports.ipWhitelist = (allowedIPs = []) => {
   };
 };
 
-// Sanitize user input
+// Sanitize user input — replace HTML special chars to prevent XSS.
+// This strips HTML tags and event handlers from all string inputs.
+// NOTE: The primary defense is CSP headers (helmet) above. This is belt-and-suspenders.
 exports.sanitizeInput = (req, res, next) => {
   const sanitize = (obj) => {
     if (typeof obj === 'string') {
-      // Remove potential XSS patterns
-      return obj.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-                .replace(/javascript:/gi, '')
-                .replace(/on\w+\s*=/gi, '');
+      // Strip all HTML tags (catches <script>, <img onerror>, <svg onload>, etc.)
+      // and remove dangerous URL schemes
+      return obj
+        .replace(/<[^>]*>/g, '')           // all HTML tags
+        .replace(/javascript:/gi, '')       // javascript: URIs
+        .replace(/vbscript:/gi, '')         // vbscript: URIs
+        .replace(/data:(?!image\/)/gi, '')  // data: URIs except images
+        .replace(/on\w+\s*=/gi, '');        // event handlers
+    } else if (Array.isArray(obj)) {
+      return obj.map(sanitize);
     } else if (typeof obj === 'object' && obj !== null) {
+      const sanitized = {};
       for (const key in obj) {
-        obj[key] = sanitize(obj[key]);
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          sanitized[key] = sanitize(obj[key]);
+        }
       }
+      return sanitized;
     }
     return obj;
   };
 
   req.body = sanitize(req.body);
+  // Create new objects for query and params — don't mutate the originals
   req.query = sanitize(req.query);
   req.params = sanitize(req.params);
   
